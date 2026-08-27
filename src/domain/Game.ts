@@ -16,6 +16,8 @@ export class Game{
 
     start(): void{
         //iniciar partida
+        //crear mazo y barajar (mezclar)
+        //click en mazo para llenar habitacion
     }
     
     playCard(card: Card):void{
