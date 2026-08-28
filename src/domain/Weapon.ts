@@ -19,4 +19,12 @@ export class Weapon{
     updateLastMonster(monster: Card):void{
         this.lastMonsterDefeated= monster;
     }
+
+    getWeapon():Card{
+        return this.weapon;
+    }
+
+    getValue():number{
+        return this.weapon.value;
+    }
 }

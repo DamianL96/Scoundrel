@@ -17,6 +17,7 @@ export class Card{
     }
 
     isWeapon(): boolean{
+        console.log(this.suit === Suit.DIAMOND);
         return this.suit === Suit.DIAMOND;
     }
 

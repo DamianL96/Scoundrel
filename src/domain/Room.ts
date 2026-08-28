@@ -1,17 +1,20 @@
 import { Card } from "./Card";
+import { Suit } from "./enums/Suit";
 
 export class Room{
     private cards: Card[] = [];
     private fullRoom: number = 4;
     private reloadMin: number = 1;
+    private emptyCard: Card = new Card (Suit.EMPTY,0);
     
     addCard(card: Card): void{
         this.cards.push(card);
+        console.log(this.cards);
     }
 
-    removeCard(card: Card): void{
+    removeCard(card: Card): Card{
         let indice= this.cards.indexOf(card);
-        this.cards.splice(indice, 1); //comprobar que el indice no sea negativo
+        return this.cards.splice(indice, 1, this.emptyCard)[0]; //reemplaza la carta por una vacía
     }
 
     getCards(): Card[]{
