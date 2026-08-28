@@ -1,10 +1,12 @@
-import { Deck } from './domain/Deck';
+import { Game } from './domain/Game';
 import StartGame from './game/main';
+import { testPlayer } from './debug/scenarios';
 
 document.addEventListener('DOMContentLoaded', () => {
 
     StartGame('game-container');
-    const deck = new Deck();
-    console.log(deck);
+    //const game = new Game();
+    //game.start();
+    testPlayer();
 
 });

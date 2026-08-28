@@ -8,18 +8,32 @@ export class Game{
     readonly deck: Deck;
     readonly room: Room;
 
+    
+
     constructor(){
         this.player = new Player();
         this.deck = new Deck();
         this.room = new Room();
+
+
     }
 
     start(): void{
-        //iniciar partida
-        //crear mazo y barajar (mezclar)
-        //click en mazo para llenar habitacion
+        
+        console.log(this.deck);
+        //llenar habitacion
+        this.loadRoom();
+        console.log(this.room);
+        console.log(this.deck);
+        //hasta aca funciona
+
+        
     }
     
+    selectCard(){
+
+    }
+
     playCard(card: Card):void{
         if(card.isMonster()){
             this.player.takeDamage(card.value);
@@ -28,4 +42,17 @@ export class Game{
             this.player.heal(card.value);
         }
     }
+
+    loadRoom(){
+        //puede recargar?
+        //está lleno?
+        if(this.room.canReload()){
+            while(!this.room.isFull()){
+                //sacamos del mazo y pasamos al room
+                let card= this.deck.getCard();
+                this.room.addCard(card);
+            }
+        }
+    }
+
 }
