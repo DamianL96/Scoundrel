@@ -50,13 +50,13 @@ export class Deck{
     getCard():Card{
         let card= this.cards.pop(); 
         if(card === undefined){
-            return new Card(Suit.HEART,0);//si el mazo esta vacio mandamos un 0 de corazones
+            return new Card(Suit.HEART,0);//si el mazo esta vacio mandamos un 0 de corazones, deberia manejarse de otra manera
         }else{
             return card;
         }
     }
 
     isEmpty():boolean{
-        return this.cards.length>=1 ? true : false;
+        return this.cards.length <=0 ? true : false;
     }
 }

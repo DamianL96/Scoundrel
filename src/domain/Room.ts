@@ -5,7 +5,7 @@ export class Room{
     private cards: Card[] = [];
     private fullRoom: number = 4;
     private reloadMin: number = 1;
-    private emptyCard: Card = new Card (Suit.EMPTY,0);
+    //private emptyCard: Card = new Card (Suit.EMPTY,0);
     
     addCard(card: Card): void{
         this.cards.push(card);
@@ -14,7 +14,7 @@ export class Room{
 
     removeCard(card: Card): Card{
         let indice= this.cards.indexOf(card);
-        return this.cards.splice(indice, 1, this.emptyCard)[0]; //reemplaza la carta por una vacía
+        return this.cards.splice(indice, 1)[0]; //reemplaza la carta por una vacía
     }
 
     getCards(): Card[]{

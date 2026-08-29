@@ -9,13 +9,11 @@ export class Player{
         return this.healt;
     }
 
-    takeDamage(damage: number): void{// si el jugador tiene un arma equipada se calcula el daño
+    fight(damage: number): boolean{// si el jugador tiene un arma equipada se calcula el daño
         
         this.healt -= damage;
 
-        if(this.healt <= 0){
-            console.log("Perdiste!");
-        }
+        return this.isDead(); //podria devolver isdead() como booleano
     }
 
     /*takeDamageWithWeapon(damage: number):void{
@@ -35,16 +33,18 @@ export class Player{
     }*/
 
     //refactor
-    takeDamageWithWeapon(damage: number):void{
+    fightWithWeapon(monsterStats: Card):boolean{
+        if(!this.weapon?.canDefeat(monsterStats)) return false;// deberia devolver algo diferente
+
+        let damage = monsterStats.value;
+        
         if(this.weapon){ //si hay arma se calcula el daño que recibo
+            
             damage -= this.weapon.getValue();
         }
-        if(damage <= 0) return; 
                 
         this.healt -= damage; //restamos el daño a la vida
-        if( this.healt <= 0){ //si nos quedamos sin vida perdemos
-                console.log("Perdiste!");
-        }
+        return this.isDead();
         
     }
     
