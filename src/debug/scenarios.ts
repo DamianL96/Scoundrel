@@ -70,11 +70,11 @@ export function testPlayer(){
     let cartaMonstruo = room.removeCard(clubs);
     let cartaMonstruo2 = room.removeCard(spades);
 
-    player.fight(cartaMonstruo.value);
-    player.fight(cartaMonstruo2.value);
+    //player.fight(cartaMonstruo.value);
+    //player.fight(cartaMonstruo2.value);
 
     console.log(player);
-    player.fight(cartaMonstruo2.value);
+    //player.fight(cartaMonstruo2.value);
     console.log(player);
     /*player.fightWithWeapon(cartaMonstruo);
     player.fightWithWeapon(cartaMonstruo);

@@ -34,14 +34,14 @@ export class Game{
 
     }
 
-    playCard(card: Card):void{
+    /*playCard(card: Card):void{
         if(card.isMonster()){
             this.player.takeDamage(card.value);
         }
         if(card.isPotion()){
             this.player.heal(card.value);
         }
-    }
+    }*/
 
     loadRoom(){
         //puede recargar?
