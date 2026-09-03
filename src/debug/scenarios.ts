@@ -10,6 +10,57 @@ export function testPlayer(){
     const room= new Room;
     const deck= new Deck;
     
+    while(!room.isFull()){
+        const card= deck.drawCard();
+        if(card === null){
+            break;
+        }
+        room.addCard(card);
+    }
+
+    let cards: Card[]= room.getCards();
+    let cartaJugada= room.playCard(cards[1]);
+    console.log(cartaJugada);
+    console.log(room.getCards());
+    if(room.canReload()){
+        while(!room.isFull()){
+            const card= deck.drawCard();
+            if(card === null){
+                break;
+            }
+            room.addCard(card);
+        }   
+    }
+
+    let cartaJugada2= room.playCard(cards[0]);
+    console.log(cartaJugada2);
+    console.log(room.getCards());
+    if(room.canReload()){
+        while(!room.isFull()){
+            const card= deck.drawCard();
+            if(card === null){
+                break;
+            }
+            room.addCard(card);
+        }   
+    }
+    let cartaJugada3= room.playCard(cards[1]);
+    console.log(cartaJugada3);
+    console.log(room.getCards());
+
+    let cartaJugada4= room.playCard(cards[0]);
+    console.log(cartaJugada4);
+    console.log(room.getCards());
+    if(room.canReload()){
+        while(!room.isFull()){
+            const card= deck.drawCard();
+            if(card === null){
+                break;
+            }
+            room.addCard(card);
+        }   
+    }
+    
     /*console.log("Mazo original", deck);
 
     let cartaNueva: Card;
@@ -23,7 +74,7 @@ export function testPlayer(){
     */
     
     
-
+/*
 
 
 
@@ -59,11 +110,12 @@ export function testPlayer(){
     }
     console.log(player.getHealt());
 
-    console.log(room.getCards());*/
-    
-    let cartaArma = room.removeCard(diamond);
     console.log(room.getCards());
     
+    let cartaArma = room.removeCard(diamond);
+    let cartaArma4 = room.removeCard(diamond);
+    console.log(room.getCards());
+    console.log(cartaArma4);
     if(cartaArma !== null){
         if(cartaArma.isWeapon()){
             player.equipWeapon(cartaArma);

@@ -11,7 +11,8 @@ export class Room{
         }        
     }
 
-    removeCard(card: Card): Card | null{
+    playCard(card: Card): Card | null{
+        console.log(card);
         const indice= this.cards.findIndex(c => c.equals(card));
         
         if(indice === -1) return null; //si la carta no esta en la habitacion
@@ -20,7 +21,7 @@ export class Room{
     }
 
     getCards(): Card[]{
-        return[...this.cards];
+        return this.cards;
     }
 
     canReload():boolean{ //comprueba que quede una sola carta en la habitación para poder rellenarla de nuevo
