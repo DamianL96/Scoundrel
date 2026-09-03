@@ -3,18 +3,23 @@ import { Suit } from "./enums/Suit";
 
 export class Deck{
     private cards: Card[] = [];
+    private static readonly MIN_VALUE = 2;
+    private static readonly MAX_RED_VALUE = 10;
+    private static readonly MAX_BLACK_VALUE = 14;
+    
 
-    constructor(){
+    constructor(shuffled: boolean = true){
         this.createDeck();
-        this.shuffle();
+        if(shuffled) this.shuffle();
+        
     }
 
     private createDeck(){
         //crear el mazo de 44 cartas sin comodines ni A,J,Q,K rojas
-        this.cards= this.cards.concat(this.createRedCards(Suit.HEART));
-        this.cards= this.cards.concat(this.createRedCards(Suit.DIAMOND));
-        this.cards= this.cards.concat(this.createBlackCards(Suit.CLUBS));
-        this.cards= this.cards.concat(this.createBlackCards(Suit.SPADES));
+        this.cards= this.cards.concat(this.createCardsInRange(Suit.HEART,Deck.MIN_VALUE,Deck.MAX_RED_VALUE));
+        this.cards= this.cards.concat(this.createCardsInRange(Suit.DIAMOND,Deck.MIN_VALUE,Deck.MAX_RED_VALUE));
+        this.cards= this.cards.concat(this.createCardsInRange(Suit.CLUBS,Deck.MIN_VALUE,Deck.MAX_BLACK_VALUE));
+        this.cards= this.cards.concat(this.createCardsInRange(Suit.SPADES,Deck.MIN_VALUE,Deck.MAX_BLACK_VALUE));
     }
     private shuffle(){
         //barajar
@@ -22,6 +27,16 @@ export class Deck{
             const j = Math.floor(Math.random()*(i+1));
             [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]]; ///destructuracion para cambiar los indices
         }
+    }
+
+    private createCardsInRange(suit:Suit, minValue:number,maxValue:number):Card[]{
+        const cards: Card[]=[];
+
+        for(let i = minValue; i <= maxValue; i++){
+            cards.push(new Card(suit,i));
+        }
+
+        return cards;
     }
 
     private createRedCards(suit:Suit):Card[]{
@@ -47,13 +62,11 @@ export class Deck{
         return blackDeck;
     }
 
-    getCard():Card{
+    drawCard():Card | null{
         let card= this.cards.pop(); 
-        if(card === undefined){
-            return new Card(Suit.HEART,0);//si el mazo esta vacio mandamos un 0 de corazones, deberia manejarse de otra manera
-        }else{
-            return card;
-        }
+
+        if(card === undefined) return null;
+        return card;
     }
 
     isEmpty():boolean{

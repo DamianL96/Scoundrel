@@ -1,20 +1,22 @@
 import { Card } from "./Card";
-import { Suit } from "./enums/Suit";
 
 export class Room{
     private cards: Card[] = [];
     private fullRoom: number = 4;
     private reloadMin: number = 1;
-    //private emptyCard: Card = new Card (Suit.EMPTY,0);
     
     addCard(card: Card): void{
-        this.cards.push(card);
-        console.log(this.cards);
+        if(!this.isFull()){
+            this.cards.push(card);
+        }        
     }
 
-    removeCard(card: Card): Card{
-        let indice= this.cards.indexOf(card);
-        return this.cards.splice(indice, 1)[0]; //reemplaza la carta por una vacía
+    removeCard(card: Card): Card | null{
+        const indice= this.cards.findIndex(c => c.equals(card));
+        
+        if(indice === -1) return null; //si la carta no esta en la habitacion
+        
+        return this.cards.splice(indice, 1)[0]; //retira la carta del mazo
     }
 
     getCards(): Card[]{

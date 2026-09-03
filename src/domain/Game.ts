@@ -51,8 +51,11 @@ export class Game{
         if(this.room.canReload()){
             while(!this.room.isFull()){
                 //sacamos del mazo y pasamos al room
-                let card= this.deck.getCard();
-                this.room.addCard(card);
+                
+                let card= this.deck.drawCard();
+                if(card !== null){
+                    this.room.addCard(card);
+                }
             }
         }
     }

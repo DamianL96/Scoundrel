@@ -42,6 +42,8 @@ export function testPlayer(){
     room.addCard(heart);
     room.addCard(diamond);
     room.addCard(clubs);
+    room.addCard(clubs);
+    console.log(room.getCards());
 
     /*let cartaMonstruo = room.removeCard(new Card(Suit.SPADES,7));
     if(cartaElegida.isMonster()){
@@ -60,22 +62,45 @@ export function testPlayer(){
     console.log(room.getCards());*/
     
     let cartaArma = room.removeCard(diamond);
+    console.log(room.getCards());
     
-    
-    if(cartaArma.isWeapon()){
-        player.equipWeapon(cartaArma);
+    if(cartaArma !== null){
+        if(cartaArma.isWeapon()){
+            player.equipWeapon(cartaArma);
+        }
     }
     console.log(player);
+    
 
     let cartaMonstruo = room.removeCard(clubs);
+    if(cartaMonstruo !== null){
+        let result= player.fightBareHanded(cartaMonstruo);
+        console.log(result);
+        result= player.fightBareHanded(cartaMonstruo);
+        console.log(result);
+    }
+
+    console.log(room.getCards());
+    
     let cartaMonstruo2 = room.removeCard(spades);
-
-    //player.fight(cartaMonstruo.value);
-    //player.fight(cartaMonstruo2.value);
-
+    if(cartaMonstruo2 !== null){
+        let result= player.fightWithWeapon(cartaMonstruo2);
+        console.log(player);
+        console.log(result);
+        result= player.fightWithWeapon(cartaMonstruo2);
+        console.log(player);
+        console.log(result);
+    }
+    console.log(room.getCards());
     console.log(player);
-    //player.fight(cartaMonstruo2.value);
-    console.log(player);
+    
+    
+
+    let potion= room.removeCard(heart);
+    console.log(room);
+
+    let potion2= room.removeCard(heart);
+    console.log(room);
     /*player.fightWithWeapon(cartaMonstruo);
     player.fightWithWeapon(cartaMonstruo);
     //player.takeDamage(cartaMonstruo.value);

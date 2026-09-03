@@ -42,7 +42,7 @@ export class Player{
             return {
                 success: false,
                 damageReceived: 0,
-                playerDead: false
+                playerDead: this.isDead()
             }
         }
 
