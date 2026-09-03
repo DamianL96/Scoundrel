@@ -1,78 +1,60 @@
 import { Card } from "./Card";
+import { FightResult } from "./interfaces/FightResult";
 import { Weapon } from "./Weapon";
 
 export class Player{
-    private healt: number = 20;
+    private health: number = 20;
     private weapon: Weapon | null= null;
 
-    getHealt(): number{
-        return this.healt;
+    getHealth(): number{
+        return this.health;
     }
 
     heal(heal:number): void{ //Comprobar que no cure mas de 20 puntos
-        let comprobacion = this.healt + heal;
+        let comprobacion = this.health + heal;
         if( (comprobacion) > 20 ){
-            this.healt = 20;
+            this.health = 20;
         }else{
-            this.healt += heal;
+            this.health += heal;
         }
     }
 
-    isDead(): boolean{
-        return this.healt <= 0;
+    private applyDamage( damage: number): void{
+        this.health = Math.max(0, this.health - damage);
     }
 
+    isDead(): boolean{ return this.health <= 0; }    
+    getWeapon(): Weapon | null{ return this.weapon; }
+    hasWeapon():boolean{ return this.weapon !== null; }
+    equipWeapon(weapon: Card):void{ this.weapon= new Weapon(weapon); }
 
-    equipWeapon(weapon: Card):void{
-        //si hay otro arma equipada descartarla junto a los enemigos
-        this.weapon= new Weapon(weapon);
+    fightBareHanded(monster: Card):FightResult{
+        this.applyDamage(monster.value);
+        return{
+            success: true,
+            damageReceived:monster.value,
+            playerDead:this.isDead()
+        }
     }
 
-    isWeaponEquiped():boolean{
-        return this.weapon !== null ? true : false; 
-    }
-
-    takeDamage( damage: number): void{
-        this.healt -= damage;
-    }
-
-    /*fight(damage: number): boolean{// si el jugador tiene un arma equipada se calcula el daño
-        
-        this.healt -= damage;
-
-        return this.isDead(); //podria devolver isdead() como booleano
-    }
-
-    /*takeDamageWithWeapon(damage: number):void{
-        if(this.weapon == null){
-            this.healt -= damage;
-        }else{
-            damage -= this.weapon.getValue();
-            if(damage >= this.healt){
-                console.log("Perdiste!");
-            }else{
-                if(damage > 0){
-                    this.healt -= damage;
-                }
+    fightWithWeapon(monster:Card):FightResult{
+        if(!this.weapon || !this.weapon.canDefeat(monster)){
+            return {
+                success: false,
+                damageReceived: 0,
+                playerDead: false
             }
-            
         }
-    }*/
 
-    //refactor
-    /*fightWithWeapon(monsterStats: Card):boolean{
-        if(!this.weapon?.canDefeat(monsterStats)) return false;// deberia devolver algo diferente
-
-        let damage = monsterStats.value;
+        const damage = Math.max(0, monster.value - this.weapon.getValue());
+        this.applyDamage(damage);
+        this.weapon.updateLastMonster(monster);
         
-        if(this.weapon){ //si hay arma se calcula el daño que recibo
-            
-            damage -= this.weapon.getValue();
+        return {
+            success: true,
+            damageReceived: damage,
+            playerDead: this.isDead()
         }
-                
-        this.healt -= damage; //restamos el daño a la vida
-        return this.isDead();
-        
-    }*/
-    
+    }
+       
 }

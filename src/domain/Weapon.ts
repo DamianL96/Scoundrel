@@ -2,8 +2,11 @@ import { Card } from "./Card";
 
 export class Weapon{
     private lastMonsterDefeated: Card | null = null;
+    private weapon: Card;
 
-    constructor( readonly weapon: Card){}
+    constructor( card: Card){
+        this.weapon = card;
+    }
 
     canDefeat(monster: Card):boolean{
         if(this.lastMonsterDefeated === null){

@@ -2,6 +2,8 @@ import { Card } from "./Card";
 import { Deck } from "./Deck";
 import { Player } from "./Player";
 import { Room } from "./Room";
+import { FightResult } from "./interfaces/FightResult";
+
 
 export class Game{
     readonly player: Player;
@@ -55,4 +57,20 @@ export class Game{
         }
     }
 
+    fight( monster: Card, useWeapon:boolean):FightResult{
+        const result = useWeapon
+            ? this.player.fightWithWeapon(monster)
+            : this.player.fightBareHanded(monster);
+
+        if(result.success){
+            //si derrotamos al monstruo
+        }
+
+        //si result.succes es false con useWeapon true significa 
+        //que no podemos derrotar al monstruo con el arma equipada
+
+        //podemos analizar el resultado acá o en la funcion que llame fight()
+        return result;
+    }
+   
 }
