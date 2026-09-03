@@ -39,29 +39,6 @@ export class Deck{
         return cards;
     }
 
-    private createRedCards(suit:Suit):Card[]{
-        let redDeck: Card[] = [];
-        let i = 2;
-        while(i < 11){
-            let card = new Card(suit, i);
-            redDeck.push(card);
-            i++;
-        }
-        return redDeck;
-    }
-    private createBlackCards(suit:Suit) :Card[]{
-        //A 2-10 J, Q, K 13 cartas
-        let blackDeck:Card[] = [];
-        let i = 2;
-        while(i < 15){
-            let card = new Card(suit,i);
-            blackDeck.push(card);
-            i++;
-        }
-        
-        return blackDeck;
-    }
-
     drawCard():Card | null{
         let card= this.cards.pop(); 
 
