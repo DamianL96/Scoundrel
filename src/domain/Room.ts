@@ -24,12 +24,20 @@ export class Room{
         return this.cards;
     }
 
+    getRemainingCards():Card[]{
+        return [...this.cards];
+    }
+
     canReload():boolean{ //comprueba que quede una sola carta en la habitación para poder rellenarla de nuevo
         return this.cards.length <= this.reloadMin ? true:false;
     }
 
     isFull():boolean{ //compreueba si la sala está llena
         return this.cards.length == this.fullRoom ? true:false;
+    }
+
+    cleanRoom(){
+        this.cards = [];//se deberia hacer de otra forma quiza
     }
     
 }

@@ -49,4 +49,8 @@ export class Deck{
     isEmpty():boolean{
         return this.cards.length <=0 ? true : false;
     }
+
+    addCards(cartas:Card[]){
+        this.cards.unshift(...cartas);//concat agrega al final o al inicio?
+    }
 }
