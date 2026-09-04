@@ -1,4 +1,5 @@
 import { Card } from "./Card";
+import { Suit } from "./enums/Suit";
 
 export class Room{
     private cards: Card[] = [];
@@ -38,6 +39,16 @@ export class Room{
 
     cleanRoom(){
         this.cards = [];//se deberia hacer de otra forma quiza
+    }
+
+    hasMonsters():boolean{
+        let monster= false;
+        for(let i = 0; i < this.cards.length; i++){
+            if(this.cards[i].isMonster()){
+                monster = true;
+            }
+        }
+        return monster;
     }
     
 }

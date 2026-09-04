@@ -23,7 +23,7 @@ export class Game{
         //llenar habitacion
         this.loadRoom();
         //hasta aca funciona
-
+        
         
     }
 
@@ -110,8 +110,12 @@ export class Game{
 
 
     hasWon():boolean{
-        
-        return true;
+        if(this.deck.isEmpty()){
+            if(!this.room.hasMonsters() && !this.player.isDead()){
+                return true;
+            }
+        }
+        return false;
     }
-    
+
 }

@@ -156,6 +156,10 @@ export function testPlayer(){
         }
     }
     console.log(player);
+
+    
+    console.log(room);
+    console.log(room.hasMonsters());
     
     /*let cartaMonstruo = room.removeCard(new Card(Suit.SPADES,7));
     if(cartaElegida.isMonster()){
