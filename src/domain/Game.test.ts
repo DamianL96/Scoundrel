@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Game } from "./Game";
+import { GameSession } from "./Game";
 import { Player } from "./Player";
 import { Deck } from "./Deck";
 import { Room } from "./Room";
@@ -10,7 +10,7 @@ describe('Game', ()=>{
 
     describe('loadRoom()',()=>{
         it('Llena la sala hasta 4 cartas cuando está vacía',()=>{
-            const game= new Game(new Player(), new Deck(), new Room());
+            const game= new GameSession(new Player(), new Deck(), new Room());
             game.loadRoom();
             expect(game.room.getCards().length).toBe(4);
         });
@@ -20,7 +20,7 @@ describe('Game', ()=>{
             room.addCard(new Card(Suit.CLUBS,2));
             room.addCard(new Card(Suit.CLUBS,3));
 
-            const game= new Game(new Player(), new Deck(), room);
+            const game= new GameSession(new Player(), new Deck(), room);
             game.loadRoom();
 
             expect(game.room.getCards().length).toBe(2);//no agrega mas cartas
@@ -37,7 +37,7 @@ describe('Game', ()=>{
             room.addCard(potion);
             room.addCard(new Card(Suit.CLUBS,3));
 
-            const game = new Game(player, new Deck(), room);
+            const game = new GameSession(player, new Deck(), room);
             game.playCard(potion);
 
             expect(game.room.getCards().length).toBe(1);
@@ -50,7 +50,7 @@ describe('Game', ()=>{
             const potion = new Card(Suit.HEART, 5);
             room.addCard(potion);
 
-            const game = new Game(player, new Deck(), room);
+            const game = new GameSession(player, new Deck(), room);
             game.playCard(potion);
 
             expect(game.room.getCards().length).toBe(4);//recarga automaticamente
@@ -64,7 +64,7 @@ describe('Game', ()=>{
             room.addCard(weaponCard);
             room.addCard(new Card(Suit.CLUBS,3));
 
-            const game = new Game(new Player(), new Deck(), room);
+            const game = new GameSession(new Player(), new Deck(), room);
             game.playCard(weaponCard);
 
             expect(game.player.hasWeapon()).toBe(true);
@@ -75,7 +75,7 @@ describe('Game', ()=>{
             const weaponCard = new Card(Suit.DIAMOND, 6);
             room.addCard(weaponCard);
 
-            const game = new Game(new Player(), new Deck(), room);
+            const game = new GameSession(new Player(), new Deck(), room);
             game.playCard(weaponCard);
 
             expect(game.player.hasWeapon()).toBe(true);
@@ -90,7 +90,7 @@ describe('Game', ()=>{
             room.addCard(monster);
             room.addCard(new Card(Suit.CLUBS,3));
 
-            const game = new Game(new Player(), new Deck(), room);
+            const game = new GameSession(new Player(), new Deck(), room);
             game.playCard(monster, false);
 
             expect(game.player.getHealth()).toBe(14);
@@ -101,7 +101,7 @@ describe('Game', ()=>{
             const monster = new Card(Suit.CLUBS, 6);
             room.addCard(monster);
 
-            const game = new Game(new Player(), new Deck(), room);
+            const game = new GameSession(new Player(), new Deck(), room);
             game.playCard(monster, false);
 
             expect(game.player.getHealth()).toBe(14);
@@ -116,7 +116,7 @@ describe('Game', ()=>{
             room.addCard(monsterFuerte);
             room.addCard(new Card(Suit.CLUBS,3));
 
-            const game = new Game(player, new Deck(), room);
+            const game = new GameSession(player, new Deck(), room);
             game.playCard(monsterFuerte, true);
 
             expect(game.room.getCards().length).toBe(1); // sigue ahí
@@ -128,7 +128,7 @@ describe('Game', ()=>{
             const monsterFuerte = new Card(Suit.CLUBS, 12);
             room.addCard(monsterFuerte);
 
-            const game = new Game(player, new Deck(), room);
+            const game = new GameSession(player, new Deck(), room);
             game.playCard(monsterFuerte, true);
 
             expect(game.room.getCards().length).toBe(4); // sigue ahí
@@ -144,7 +144,7 @@ describe('Game', ()=>{
             room.addCard(primerMonstruo);
             room.addCard(segundoMonstruo);
 
-            const game = new Game(player, new Deck(), room);
+            const game = new GameSession(player, new Deck(), room);
             game.playCard(primerMonstruo, true); // se derrota, arma queda con historial = 6
 
             game.playCard(segundoMonstruo, true); // debería fallar, 8 >= 6
@@ -155,7 +155,7 @@ describe('Game', ()=>{
 
     describe('hasWon()', () => {
         it('No gana si el mazo aún tiene cartas', () => {
-            const game = new Game(new Player(), new Deck(), new Room());
+            const game = new GameSession(new Player(), new Deck(), new Room());
             expect(game.hasWon()).toBe(false);
         });
 
@@ -166,7 +166,7 @@ describe('Game', ()=>{
             const room = new Room();
             room.addCard(new Card(Suit.HEART, 3)); // poción, no monstruo
 
-            const game = new Game(new Player(), emptyDeck, room);
+            const game = new GameSession(new Player(), emptyDeck, room);
             expect(game.hasWon()).toBe(true);
         });
 
@@ -177,7 +177,7 @@ describe('Game', ()=>{
             const player = new Player();
             player.fightBareHanded(new Card(Suit.CLUBS, 25)); // lo mata
 
-            const game = new Game(player, emptyDeck, new Room());
+            const game = new GameSession(player, emptyDeck, new Room());
             expect(game.hasWon()).toBe(false);
         });
     });
@@ -194,7 +194,7 @@ describe('Game', ()=>{
             const deck = new Deck();
             const cartasEnMazoAntes = deck.getRemainingCards().length; //44
             
-            const game = new Game(new Player(), deck, room);
+            const game = new GameSession(new Player(), deck, room);
             game.escapeRoom();
 
             expect(game.deck.getRemainingCards().length).toBe(cartasEnMazoAntes + 2);
@@ -205,7 +205,7 @@ describe('Game', ()=>{
             room.addCard(new Card(Suit.CLUBS, 5));
             room.addCard(new Card(Suit.SPADES, 7));
 
-            const game = new Game(new Player(), new Deck(), room);
+            const game = new GameSession(new Player(), new Deck(), room);
             game.escapeRoom();
 
             expect(game.room.getCards().length).toBe(0);
@@ -216,7 +216,7 @@ describe('Game', ()=>{
             room.addCard(new Card(Suit.CLUBS, 5));
             room.addCard(new Card(Suit.SPADES, 7));
 
-            const game = new Game(new Player(), new Deck(), room);
+            const game = new GameSession(new Player(), new Deck(), room);
             game.escapeRoom();
             game.loadRoom();
 
@@ -226,7 +226,7 @@ describe('Game', ()=>{
 
     describe('points()',()=>{
         it('No muta el mazo real: llamarlo dos veces da el mismo resultado',()=>{
-            const game= new Game(new Player(), new Deck(), new Room());
+            const game= new GameSession(new Player(), new Deck(), new Room());
 
             const primeraLlamada= game.points();
             const segundaLlamada= game.points();
@@ -238,7 +238,7 @@ describe('Game', ()=>{
         const deck = new Deck();
         const cantidadAntes = deck.getRemainingCards().length;
 
-        const game = new Game(new Player(), deck, new Room());
+        const game = new GameSession(new Player(), deck, new Room());
         game.points();
 
         expect(game.deck.getRemainingCards().length).toBe(cantidadAntes);
@@ -252,7 +252,7 @@ describe('Game', ()=>{
                 const deck = new Deck();
                 while (!deck.isEmpty()) deck.drawCard(); // mazo vacío, sin pociones que sumar
 
-                const game = new Game(player, deck, new Room());
+                const game = new GameSession(player, deck, new Room());
 
                 expect(game.points()).toBe(15);
             });
@@ -265,7 +265,7 @@ describe('Game', ()=>{
                 while (!deck.isEmpty()) deck.drawCard(); // vaciamos
                 deck.addCards([new Card(Suit.HEART, 4), new Card(Suit.HEART, 6)]); // agregamos 2 pociones conocidas
 
-                const game = new Game(player, deck, new Room());
+                const game = new GameSession(player, deck, new Room());
 
                 expect(game.points()).toBe(15 + 4 + 6); // 25
             });
@@ -280,7 +280,7 @@ describe('Game', ()=>{
                     new Card(Suit.DIAMOND, 3), // arma, no cuenta
                 ]);
 
-                const game = new Game(player, deck, new Room());
+                const game = new GameSession(player, deck, new Room());
 
                 expect(game.points()).toBe(20 + 5); // solo la poción suma
             });
@@ -296,7 +296,7 @@ describe('Game', ()=>{
             while (!deck.isEmpty()) deck.drawCard();
             deck.addCards([new Card(Suit.CLUBS, 6), new Card(Suit.SPADES, 4)]);
 
-            const game = new Game(player, deck, new Room());
+            const game = new GameSession(player, deck, new Room());
 
             expect(game.points()).toBe(-10); // -(6 + 4)
         });
@@ -313,7 +313,7 @@ describe('Game', ()=>{
                 new Card(Suit.DIAMOND, 3), // arma, no cuenta
             ]);
 
-            const game = new Game(player, deck, new Room());
+            const game = new GameSession(player, deck, new Room());
 
             expect(game.points()).toBe(-6);
         });

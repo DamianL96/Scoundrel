@@ -2,10 +2,11 @@ import { Card } from "./Card";
 import { Deck } from "./Deck";
 import { Player } from "./Player";
 import { Room } from "./Room";
-import { FightResult } from "./interfaces/FightResult";
+import { FightResult } from "./interfaces/FightResult.interface";
+import { GameStateView } from "./interfaces/GameStateView.interface";
 
 
-export class Game{
+export class GameSession{
     readonly player: Player;
     readonly deck: Deck;
     readonly room: Room;
@@ -24,6 +25,29 @@ export class Game{
         //hasta aca funciona
         
         
+    }
+
+    getState():GameStateView{
+        const weapon= this.player.getWeapon();
+
+        return {
+            playerHealth: this.player.getHealth(),
+            maxHealt: 20,
+            
+            weapon: weapon
+            ?{
+                value: weapon.getWeapon(),
+                historial: weapon.getLastMonsterDefeated()?? null
+            }
+            :null,
+
+            roomCards: this.room.getCards(),
+            deckCount: this.deck.getRemainingCards().length,
+            canEscape: this.canEscape(),
+            canReloadRoom: this.room.canReload(),
+
+            status: this.hasWon()? 'won' : this.hasLost()? 'lost' : 'playing'
+        }
     }
 
     playCard(card: Card, useWeapon:boolean=false):void{

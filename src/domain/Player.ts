@@ -1,5 +1,5 @@
 import { Card } from "./Card";
-import { FightResult } from "./interfaces/FightResult";
+import { FightResult } from "./interfaces/FightResult.interface";
 import { Weapon } from "./Weapon";
 
 export class Player{
