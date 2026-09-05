@@ -53,4 +53,8 @@ export class Deck{
     addCards(cartas:Card[]){
         this.cards.unshift(...cartas);//concat agrega al final o al inicio?
     }
+
+    getReaminingCards():Card[]{
+        return [...this.cards];
+    }
 }
