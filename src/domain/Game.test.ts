@@ -30,7 +30,22 @@ describe('Game', ()=>{
     describe('playCard() - Pocion', ()=>{
         it('Cura al jugador y saca la poción de la sala', () => {
             const player = new Player();
-            player.takeDamage_TEST_HELPER?.(10); // ver nota abajo
+            player.takeDamage_TEST_HELPER?.(10);
+
+            const room = new Room();
+            const potion = new Card(Suit.HEART, 5);
+            room.addCard(potion);
+            room.addCard(new Card(Suit.CLUBS,3));
+
+            const game = new Game(player, new Deck(), room);
+            game.playCard(potion);
+
+            expect(game.room.getCards().length).toBe(1);
+        });
+        it('Cura al jugador si es la ultima carta, recarga la sala', () => {
+            const player = new Player();
+            player.takeDamage_TEST_HELPER?.(10);
+
             const room = new Room();
             const potion = new Card(Suit.HEART, 5);
             room.addCard(potion);
@@ -38,7 +53,7 @@ describe('Game', ()=>{
             const game = new Game(player, new Deck(), room);
             game.playCard(potion);
 
-            expect(game.room.getCards().length).toBe(0);
+            expect(game.room.getCards().length).toBe(4);//recarga automaticamente
         });
     });
 
@@ -47,12 +62,24 @@ describe('Game', ()=>{
             const room = new Room();
             const weaponCard = new Card(Suit.DIAMOND, 6);
             room.addCard(weaponCard);
+            room.addCard(new Card(Suit.CLUBS,3));
 
             const game = new Game(new Player(), new Deck(), room);
             game.playCard(weaponCard);
 
             expect(game.player.hasWeapon()).toBe(true);
-            expect(game.room.getCards().length).toBe(0);
+            expect(game.room.getCards().length).toBe(1);
+        });
+        it('Equipa el arma, si es la ultima carta, recarga la sala', () => {
+            const room = new Room();
+            const weaponCard = new Card(Suit.DIAMOND, 6);
+            room.addCard(weaponCard);
+
+            const game = new Game(new Player(), new Deck(), room);
+            game.playCard(weaponCard);
+
+            expect(game.player.hasWeapon()).toBe(true);
+            expect(game.room.getCards().length).toBe(4);
         });
     });
 
@@ -61,15 +88,40 @@ describe('Game', ()=>{
             const room = new Room();
             const monster = new Card(Suit.CLUBS, 6);
             room.addCard(monster);
+            room.addCard(new Card(Suit.CLUBS,3));
 
             const game = new Game(new Player(), new Deck(), room);
             game.playCard(monster, false);
 
             expect(game.player.getHealth()).toBe(14);
-            expect(game.room.getCards().length).toBe(0);
+            expect(game.room.getCards().length).toBe(1);
+        });
+        it('A mano limpia, hace daño al jugador y saca el monstruo de la sala, si es la ultima carta, recarga la sala', () => {
+            const room = new Room();
+            const monster = new Card(Suit.CLUBS, 6);
+            room.addCard(monster);
+
+            const game = new Game(new Player(), new Deck(), room);
+            game.playCard(monster, false);
+
+            expect(game.player.getHealth()).toBe(14);
+            expect(game.room.getCards().length).toBe(4);
         });
 
-        it('Si el arma no puede derrotarlo, el el jugador se come el daño restante', () => {
+        it('Si el arma no puede derrotarlo, el jugador se come el daño restante', () => {
+            const player = new Player();
+            player.equipWeapon(new Card(Suit.DIAMOND, 3));
+            const room = new Room();
+            const monsterFuerte = new Card(Suit.CLUBS, 12);
+            room.addCard(monsterFuerte);
+            room.addCard(new Card(Suit.CLUBS,3));
+
+            const game = new Game(player, new Deck(), room);
+            game.playCard(monsterFuerte, true);
+
+            expect(game.room.getCards().length).toBe(1); // sigue ahí
+        });
+        it('Si el arma no puede derrotarlo, el jugador se come el daño restante, si es la ultima carta, recarga la sala', () => {
             const player = new Player();
             player.equipWeapon(new Card(Suit.DIAMOND, 3));
             const room = new Room();
@@ -79,7 +131,7 @@ describe('Game', ()=>{
             const game = new Game(player, new Deck(), room);
             game.playCard(monsterFuerte, true);
 
-            expect(game.room.getCards().length).toBe(0); // sigue ahí
+            expect(game.room.getCards().length).toBe(4); // sigue ahí
         });
 
         it('Si el arma ya derrotó un monstruo, no puede pelear contra otro de valor igual o mayor', () => {
@@ -148,17 +200,7 @@ describe('Game', ()=>{
             expect(game.deck.getRemainingCards().length).toBe(cartasEnMazoAntes + 2);
         });
 
-        it('vacía la sala al huir', () => {
-            const room = new Room();
-            room.addCard(new Card(Suit.CLUBS, 5));
-
-            const game = new Game(new Player(), new Deck(), room);
-            game.escapeRoom();
-
-            expect(game.room.getCards().length).toBe(0);
-        });
-
-        it('recarga la sala con 4 cartas nuevas después de huir', () => {
+        it('Vacía la sala al huir', () => {
             const room = new Room();
             room.addCard(new Card(Suit.CLUBS, 5));
             room.addCard(new Card(Suit.SPADES, 7));
@@ -166,9 +208,116 @@ describe('Game', ()=>{
             const game = new Game(new Player(), new Deck(), room);
             game.escapeRoom();
 
-            expect(game.room.getCards().length).toBe(4);
+            expect(game.room.getCards().length).toBe(0);
         });
 
+        it('Llamar loadRoom() después de escapar recarga la sala', () => {
+            const room = new Room();
+            room.addCard(new Card(Suit.CLUBS, 5));
+            room.addCard(new Card(Suit.SPADES, 7));
+
+            const game = new Game(new Player(), new Deck(), room);
+            game.escapeRoom();
+            game.loadRoom();
+
+            expect(game.room.getCards().length).toBe(4);
+        });
+    });
+
+    describe('points()',()=>{
+        it('No muta el mazo real: llamarlo dos veces da el mismo resultado',()=>{
+            const game= new Game(new Player(), new Deck(), new Room());
+
+            const primeraLlamada= game.points();
+            const segundaLlamada= game.points();
+
+            expect(segundaLlamada).toBe(primeraLlamada);
+        });
+
+        it('No reduce la cantidad de cartas restantes del mazo', () => {
+        const deck = new Deck();
+        const cantidadAntes = deck.getRemainingCards().length;
+
+        const game = new Game(new Player(), deck, new Room());
+        game.points();
+
+        expect(game.deck.getRemainingCards().length).toBe(cantidadAntes);
+        });
+
+        describe('Jugador vivo', () => {
+            it('Devuelve la vida actual si no hay pociones en el mazo restante', () => {
+                const player = new Player();
+                player.fightBareHanded(new Card(Suit.CLUBS, 5)); // 15 HP
+
+                const deck = new Deck();
+                while (!deck.isEmpty()) deck.drawCard(); // mazo vacío, sin pociones que sumar
+
+                const game = new Game(player, deck, new Room());
+
+                expect(game.points()).toBe(15);
+            });
+
+            it('Suma el valor de las pociones restantes en el mazo a la vida actual', () => {
+                const player = new Player();
+                player.fightBareHanded(new Card(Suit.CLUBS, 5)); // 15 HP
+
+                const deck = new Deck();
+                while (!deck.isEmpty()) deck.drawCard(); // vaciamos
+                deck.addCards([new Card(Suit.HEART, 4), new Card(Suit.HEART, 6)]); // agregamos 2 pociones conocidas
+
+                const game = new Game(player, deck, new Room());
+
+                expect(game.points()).toBe(15 + 4 + 6); // 25
+            });
+
+            it('Ignora cartas que no son pociones al sumar', () => {
+                const player = new Player();
+                const deck = new Deck();
+                while (!deck.isEmpty()) deck.drawCard();
+                deck.addCards([
+                    new Card(Suit.HEART, 5),   // poción, cuenta
+                    new Card(Suit.CLUBS, 9),   // monstruo, no cuenta
+                    new Card(Suit.DIAMOND, 3), // arma, no cuenta
+                ]);
+
+                const game = new Game(player, deck, new Room());
+
+                expect(game.points()).toBe(20 + 5); // solo la poción suma
+            });
+        });
+
+        describe('Jugador muerto', () => {
+            
+        it('Devuelve un valor negativo restando el valor de los monstruos restantes', () => {
+            const player = new Player();
+            player.fightBareHanded(new Card(Suit.CLUBS, 25)); // lo mata
+
+            const deck = new Deck();
+            while (!deck.isEmpty()) deck.drawCard();
+            deck.addCards([new Card(Suit.CLUBS, 6), new Card(Suit.SPADES, 4)]);
+
+            const game = new Game(player, deck, new Room());
+
+            expect(game.points()).toBe(-10); // -(6 + 4)
+        });
+
+        it('Ignora cartas que no son monstruos al restar', () => {
+            const player = new Player();
+            player.fightBareHanded(new Card(Suit.CLUBS, 25));
+
+            const deck = new Deck();
+            while (!deck.isEmpty()) deck.drawCard();
+            deck.addCards([
+                new Card(Suit.CLUBS, 6),   // monstruo, cuenta
+                new Card(Suit.HEART, 9),   // poción, no cuenta
+                new Card(Suit.DIAMOND, 3), // arma, no cuenta
+            ]);
+
+            const game = new Game(player, deck, new Room());
+
+            expect(game.points()).toBe(-6);
+        });
+    });
 
     });
 });

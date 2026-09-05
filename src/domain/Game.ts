@@ -9,7 +9,7 @@ export class Game{
     readonly player: Player;
     readonly deck: Deck;
     readonly room: Room;
-    private escapes: boolean= false;
+    private canEscapeFlag: boolean= true;
     
     //podemos enviar datos por parametros para testear
     constructor(player?: Player, deck?: Deck, room?: Room){
@@ -28,15 +28,28 @@ export class Game{
 
     playCard(card: Card, useWeapon:boolean=false):void{
         if(card.isMonster()){
-            this.fight(card,useWeapon); //hay que pasarle si usa o no el arma (si la tiene equipada)
+            const result= this.fight(card,useWeapon); //hay que pasarle si usa o no el arma (si la tiene equipada)
+
+            if(result.success){
+                this.onCardRemovedFromRoom();
+            }
 
         }else if(card.isPotion()){
             this.player.heal(card.value);
             this.room.playCard(card); //retiramos la carta del room
+            this.onCardRemovedFromRoom();
 
         }else if(card.isWeapon()){
             this.player.equipWeapon(card);
             this.room.playCard(card); //retiramos la carta del room
+            this.onCardRemovedFromRoom();
+        }
+    }
+
+    private onCardRemovedFromRoom():void{ //cada vez que se saca una carta de Room
+        if(this.room.getCards().length === 0){
+            this.canEscapeFlag = true;
+            this.loadRoom();
         }
     }
 
@@ -53,7 +66,6 @@ export class Game{
                 }
                 this.room.addCard(card);
             }
-            this.escapes= false;
         }
     }
 
@@ -76,20 +88,22 @@ export class Game{
 
 
     canEscape():boolean{
-        return !this.escapes;
+        return this.canEscapeFlag;
+    }
+
+    resetCanEscape(){
+        this.canEscapeFlag= true;
     }
 
     //TESTEAR FUNCION
-    escapeRoom(){ //implementar que se pueda escapar juntando cartas de un lado o de otro.
-        //si ya escapo anteriormente no puede escapar ahora
-        if (!this.escapes) return;//cambiar nombre de esta variable
+    escapeRoom(){ 
+        if (!this.canEscapeFlag) return;
 
-        const escapeRoom = this.room.getCards();
-        console.log(escapeRoom);
+        const escapeRoom = this.room.getCards();//implementar que se pueda escapar juntando cartas de un lado o de otro.
+        
         this.deck.addCards(escapeRoom);
         this.room.cleanRoom();
-        this.escapes= true;
-    
+        this.canEscapeFlag= false;
     }
    
     points():number{
@@ -126,6 +140,10 @@ export class Game{
             }
         }
         return false;
+    }
+
+    hasLost():boolean{
+        return this.player.isDead();
     }
 
 }
