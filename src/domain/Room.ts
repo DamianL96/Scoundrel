@@ -22,7 +22,7 @@ export class Room{
     }
 
     getCards(): Card[]{
-        return this.cards;
+        return [...this.cards];
     }
 
     getRemainingCards():Card[]{
