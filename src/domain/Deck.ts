@@ -10,8 +10,7 @@ export class Deck{
 
     constructor(shuffled: boolean = true){
         this.createDeck();
-        if(shuffled) this.shuffle();
-        
+        if(shuffled) this.shuffle(); 
     }
 
     private createDeck(){
@@ -54,7 +53,7 @@ export class Deck{
         this.cards.unshift(...cartas);//concat agrega al final o al inicio?
     }
 
-    getReaminingCards():Card[]{
+    getRemainingCards():Card[]{
         return [...this.cards];
     }
 }
