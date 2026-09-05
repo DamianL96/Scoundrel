@@ -155,5 +155,16 @@ describe('Player - Combate', ()=>{
 
             expect(player.getHealth()).toBe(antesDeSegundoIntento);
         });
-    })
+    });
+    
+    describe('equipWeapon()',()=>{
+        it('Equipar una nueva arma resetea el historial de la anterior',()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND,5));
+            player.fightWithWeapon(new Card(Suit.CLUBS,3));
+
+            player.equipWeapon(new Card(Suit.DIAMOND,9));
+            const newWeapon= player.getWeapon();
+            expect(newWeapon?.getLastMonsterDefeated()).toBeNull();
+        });
+    });
 });
