@@ -1,4 +1,3 @@
-import { use } from "matter";
 import { Card } from "./Card";
 import { Deck } from "./Deck";
 import { Player } from "./Player";
@@ -12,11 +11,11 @@ export class Game{
     readonly room: Room;
     private escapes: boolean= false;
     
-
-    constructor(){
-        this.player = new Player();
-        this.deck = new Deck();
-        this.room = new Room();
+    //podemos enviar datos por parametros para testear
+    constructor(player?: Player, deck?: Deck, room?: Room){
+        this.player = player?? new Player();
+        this.deck = deck?? new Deck();
+        this.room = room?? new Room();
     }
 
     start(): void{
@@ -30,12 +29,14 @@ export class Game{
     playCard(card: Card, useWeapon:boolean=false):void{
         if(card.isMonster()){
             this.fight(card,useWeapon); //hay que pasarle si usa o no el arma (si la tiene equipada)
-        }
-        if(card.isPotion()){
+
+        }else if(card.isPotion()){
             this.player.heal(card.value);
-        }
-        if(card.isWeapon()){
+            this.room.playCard(card); //retiramos la carta del room
+
+        }else if(card.isWeapon()){
             this.player.equipWeapon(card);
+            this.room.playCard(card); //retiramos la carta del room
         }
     }
 
@@ -63,6 +64,7 @@ export class Game{
 
         if(result.success){
             //si derrotamos al monstruo
+            this.room.playCard(monster);//retiramos la carta del room
         }
 
         //si result.succes es false con useWeapon true significa 
@@ -72,25 +74,32 @@ export class Game{
         return result;
     }
 
+
+    canEscape():boolean{
+        return !this.escapes;
+    }
+
     //TESTEAR FUNCION
     escapeRoom(){ //implementar que se pueda escapar juntando cartas de un lado o de otro.
-        if (!this.escapes) {
-            const escapeRoom = this.room.getCards();
-            console.log(escapeRoom);
-            this.deck.addCards(escapeRoom);
-            this.room.cleanRoom();
-            this.loadRoom(); //se modifica el valor de escapes=false en loadRoom pero se sobrescribe debajo
-            this.escapes= true;
-        }
+        //si ya escapo anteriormente no puede escapar ahora
+        if (!this.escapes) return;//cambiar nombre de esta variable
+
+        const escapeRoom = this.room.getCards();
+        console.log(escapeRoom);
+        this.deck.addCards(escapeRoom);
+        this.room.cleanRoom();
+        this.escapes= true;
+    
     }
    
     points():number{
         let points:number=0;
-        
+        let copy= this.deck.getRemainingCards();
         if(!this.player.isDead()){
             points = this.player.getHealth();
-            while(!this.deck.isEmpty()){
-                let card= this.deck.drawCard();
+            
+            while(copy.length > 0 ){
+                let card= copy.pop();
                 if(card?.isPotion()){
                     points += card.value;
                 }
@@ -99,12 +108,13 @@ export class Game{
         }
 
         
-        while(!this.deck.isEmpty()){
-            let card= this.deck.drawCard();
+        while(copy.length > 0 ){
+            let card= copy.pop();
             if(card?.isMonster()){
                 points -= card.value;
             }
         }
+
         return points;
     }
 

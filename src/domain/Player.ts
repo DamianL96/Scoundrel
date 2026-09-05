@@ -23,6 +23,10 @@ export class Player{
         this.health = Math.max(0, this.health - damage);
     }
 
+    takeDamage_TEST_HELPER(damage:number){
+        this.health = Math.max(0, this.health - damage);
+    }
+
     isDead(): boolean{ return this.health <= 0; }    
     getWeapon(): Weapon | null{ return this.weapon; }
     hasWeapon():boolean{ return this.weapon !== null; }
