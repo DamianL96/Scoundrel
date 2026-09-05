@@ -65,5 +65,95 @@ describe('Player', ()=>{
         expect(player.getHealth()).toBe(0);
     });
 
-    
+});
+
+describe('Player - Combate', ()=>{
+    let player: Player;
+
+    beforeEach(()=>{
+        player= new Player();
+    });
+
+    describe('fightBareHanded()', ()=>{
+        it('Recibe daño igual al valor del mosntruo',()=>{
+            const monster = new Card(Suit.CLUBS, 6);
+            const result = player.fightBareHanded(monster);
+
+            expect(result.success).toBe(true);
+            expect(result.damageReceived).toBe(6);
+            expect(player.getHealth()).toBe(14);
+        });
+
+        it('Indica plarerIsDead si el golpe lo mata', ()=>{
+            const monster = new Card(Suit.CLUBS, 25);
+            const result = player.fightBareHanded(monster);
+
+            expect(result.playerDead).toBe(true);
+            expect(player.isDead()).toBe(true);
+        });
+    });
+
+    describe('fightWithWeapon()', ()=>{
+        it('Falla si no hay arma equipada',()=>{
+            const monster = new Card(Suit.CLUBS, 5);
+            const result = player.fightWithWeapon(monster);
+
+            expect(result.success).toBe(false);
+            expect(result.damageReceived).toBe(0);
+            expect(player.getHealth()).toBe(20);
+        });
+
+        it('Falla si el arma no puede derrotar al mostruo(Ya derrotó a uno menor)', ()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND, 5));
+            player.fightWithWeapon(new Card(Suit.CLUBS, 3));
+            const result= player.fightWithWeapon(new Card(Suit.CLUBS, 8));
+
+            expect(result.success).toBe(false);
+        });
+
+        it('Falla si el arma no puede derrotar al mostruo(Ya derrotó a de igual daño)', ()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND, 5));
+            player.fightWithWeapon(new Card(Suit.CLUBS, 3));
+            const result= player.fightWithWeapon(new Card(Suit.CLUBS, 3));
+
+            expect(result.success).toBe(false);
+        });
+
+        it('Reduce el daño recibido según el valor del arma',()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND, 5));
+            const result= player.fightWithWeapon(new Card(Suit.CLUBS, 8));
+
+            expect(result.success).toBe(true);
+            expect(result.damageReceived).toBe(3);
+            expect(player.getHealth()).toBe(17);
+        });
+
+        it('El daño no baja de 0 si el arma es mas fuerte que el mosntruo', ()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND, 5));
+            const result= player.fightWithWeapon(new Card(Suit.CLUBS, 4));
+
+            expect(result.success).toBe(true);
+            expect(result.damageReceived).toBe(0);
+            expect(player.getHealth()).toBe(20);
+        });
+
+        it('El daño no baja de 0 si el arma es igual de fuerte que el mosntruo', ()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND, 5));
+            const result= player.fightWithWeapon(new Card(Suit.CLUBS, 5));
+
+            expect(result.success).toBe(true);
+            expect(result.damageReceived).toBe(0);
+            expect(player.getHealth()).toBe(20);
+        });
+
+        it('El arma se rompe (no puede derrotar) pero el jugador no recibió daño en el intento fallido', ()=>{
+            player.equipWeapon(new Card(Suit.DIAMOND, 5));
+            player.fightWithWeapon(new Card(Suit.CLUBS, 3));
+            const antesDeSegundoIntento = player.getHealth();
+
+            player.fightWithWeapon(new Card(Suit.CLUBS, 8)); //el arma no lo mata
+
+            expect(player.getHealth()).toBe(antesDeSegundoIntento);
+        });
+    })
 });

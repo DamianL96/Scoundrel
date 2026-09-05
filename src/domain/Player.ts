@@ -38,8 +38,8 @@ export class Player{
     }
 
     fightWithWeapon(monster:Card):FightResult{
-        if(!this.weapon || !this.weapon.canDefeat(monster)){
-            return {
+        if(!this.weapon || !this.weapon.canDefeat(monster)){//si el arma no mata al monstruo, no la puede jugar
+            return { //crear un identificador para comparar mas facil cuando y por que el resultado
                 success: false,
                 damageReceived: 0,
                 playerDead: this.isDead()
