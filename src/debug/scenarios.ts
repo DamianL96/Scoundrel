@@ -1,7 +1,7 @@
 import { Card } from "../domain/Card";
 import { Deck } from "../domain/Deck";
 import { Suit } from "../domain/enums/Suit";
-import { GameSession } from "../domain/Game";
+import { GameSession } from "../domain/GameSession";
 import { Player } from "../domain/Player";
 import { Room } from "../domain/Room";
 

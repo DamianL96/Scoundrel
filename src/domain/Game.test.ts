@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GameSession } from "./Game";
+import { GameSession } from "./GameSession";
 import { Player } from "./Player";
 import { Deck } from "./Deck";
 import { Room } from "./Room";
