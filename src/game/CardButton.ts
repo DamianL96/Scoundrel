@@ -4,7 +4,7 @@ import * as Phaser from 'phaser';
 export class CardButton extends Phaser.GameObjects.Container{
     protected rectangulo: Phaser.GameObjects.Rectangle;
 
-    constructor(scene:Phaser.Scene, x:number, y:number, label:string){
+    constructor(scene:Phaser.Scene, x:number, y:number, label:string, interactive:boolean=true){
         super(scene, x, y);
 
        this.rectangulo = scene.add.rectangle(0, 0, 90, 130, 0xffffff).setStrokeStyle(2, 0x000000);
@@ -14,11 +14,13 @@ export class CardButton extends Phaser.GameObjects.Container{
             align: 'center'
         }).setOrigin(0.5);
 
-        this.rectangulo.setInteractive({ useHandCursor: true});
-        this.rectangulo.on( 'pointerdown', ()=> this.emit('clicked'));
+        if(interactive){
+            this.rectangulo.setInteractive({ useHandCursor: true});
+            this.rectangulo.on( 'pointerdown', ()=> this.emit('clicked'));
 
-        this.add([this.rectangulo, text]);
+        }
         
+        this.add([this.rectangulo, text]);
         scene.add.existing(this);
     }
 

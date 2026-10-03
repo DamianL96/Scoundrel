@@ -3,6 +3,8 @@ import { GameSession } from '../domain/GameSession';
 import { Card } from '../domain/Card';
 import { RoomView } from '../game/RoomView';
 import { CardButton } from '../game/CardButton';
+import { DeckView } from '../game/DeckView';
+import { WeaponView } from '../game/WeaponView';
 
 export class MainScene extends Phaser.Scene{
 
@@ -13,6 +15,8 @@ export class MainScene extends Phaser.Scene{
     
     private bareHandedButton: CardButton;
     private weaponSlotButton: CardButton;
+    private deckView: DeckView;
+    private weaponView: WeaponView;
 
     constructor(){
         super({key:'MainScene'});
@@ -35,6 +39,9 @@ export class MainScene extends Phaser.Scene{
         this.weaponSlotButton = new CardButton( this, 420, 500, 'Arma');
         this.weaponSlotButton.on('clicked', ()=>this.onWeaponSlotClicked());
 
+        this.deckView = new DeckView(this, 80, 150);
+        this.weaponView= new WeaponView(this, 540, 500);
+
         this.render();
     }
 
@@ -42,6 +49,9 @@ export class MainScene extends Phaser.Scene{
         this.roomView.render(this.gameSession.room.getCards(), this.selectedMonster);
         this.updateHealthText();
         this.weaponSlotButton.setEnabled(this.gameSession.player.hasWeapon());
+
+        this.deckView.render(this.gameSession.deck.getRemainingCards().length);
+        this.weaponView.render(this.gameSession.player.getWeapon());
     }
 
     /*private onCardClicked(card: Card): void{ //si la carta es un mosntruo y tiene arma, juega la carta y redibuja la pantalla

@@ -6,9 +6,9 @@ export class CardView extends CardButton{
 
     //private rectangle: Phaser.GameObjects.Rectangle;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, private card: Card){
+    constructor(scene: Phaser.Scene, x: number, y: number, private card: Card, interactive:boolean=true){
 
-        super(scene, x, y, `${card.suit}\n${card.value}`);
+        super(scene, x, y, `${card.suit}\n${card.value}`, interactive);
 
         
         this.on('clicked',() => this.emit('card-clicked', this.card)); //emite la carta cuando es clickada
