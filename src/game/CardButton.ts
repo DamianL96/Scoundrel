@@ -5,7 +5,7 @@ export class CardButton extends Phaser.GameObjects.Container{
     protected rectangulo: Phaser.GameObjects.Rectangle;
 
     constructor(scene:Phaser.Scene, x:number, y:number, label:string, interactive:boolean=true){
-        super(scene, x, y);
+       super(scene, x, y);
 
        this.rectangulo = scene.add.rectangle(0, 0, 90, 130, 0xffffff).setStrokeStyle(2, 0x000000);
         const text = scene.add.text(0, 0, label,{

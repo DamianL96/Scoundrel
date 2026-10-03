@@ -15,6 +15,8 @@ export class MainScene extends Phaser.Scene{
     
     private bareHandedButton: CardButton;
     private weaponSlotButton: CardButton;
+    private escapeButton: CardButton;
+
     private deckView: DeckView;
     private weaponView: WeaponView;
 
@@ -27,20 +29,28 @@ export class MainScene extends Phaser.Scene{
         this.gameSession = new GameSession();
         this.gameSession.start();
 
-        this.healthText = this.add.text(20, 20, '', { fontSize:'24', color: '#ffffff'});
+        this.healthText = this.add.text(20, 20, '', { fontSize:'24px', color: '#ffffff'});
 
         this.roomView = new RoomView( this, 300);
 
-        this.events.on('card-clicked', (card: Card)=> this.onCardClicked(card));//que hace esto?
+        this.events.on('card-clicked', (card: Card)=> this.onCardClicked(card));
 
-        this.bareHandedButton = new CardButton( this, 300, 500, 'A puño \nlimpio');
+        this.bareHandedButton = new CardButton( this, 690, 500, 'A puño \nlimpio');
         this.bareHandedButton.on('clicked', ()=> this.onBareHandClicked());
 
-        this.weaponSlotButton = new CardButton( this, 420, 500, 'Arma');
+        this.weaponSlotButton = new CardButton( this, 800, 500, 'Arma');
         this.weaponSlotButton.on('clicked', ()=>this.onWeaponSlotClicked());
 
+        this.escapeButton = new CardButton( this, 1180, 300, 'Huir');
+        this.escapeButton.on('clicked', ()=> this.onEscapeClicked());
+
         this.deckView = new DeckView(this, 80, 150);
+
+        this.deckView.onDeckClicked(()=>this.onDeckClicked());
+
         this.weaponView= new WeaponView(this, 540, 500);
+
+
 
         this.render();
     }
@@ -50,8 +60,9 @@ export class MainScene extends Phaser.Scene{
         this.updateHealthText();
         this.weaponSlotButton.setEnabled(this.gameSession.player.hasWeapon());
 
-        this.deckView.render(this.gameSession.deck.getRemainingCards().length);
+        this.deckView.render(this.gameSession.deck.getRemainingCards().length, this.gameSession.room.canReload());
         this.weaponView.render(this.gameSession.player.getWeapon());
+        this.escapeButton.setEnabled(this.gameSession.canEscape());
     }
 
     /*private onCardClicked(card: Card): void{ //si la carta es un mosntruo y tiene arma, juega la carta y redibuja la pantalla
@@ -91,4 +102,19 @@ export class MainScene extends Phaser.Scene{
         this.selectedMonster = null;
         this.render();
     }
+
+    private onDeckClicked():void{
+        if(!this.gameSession.room.canReload()) return;
+        this.gameSession.loadRoom();
+        this.render();
+    }
+
+    private onEscapeClicked():void{
+        if(!this.gameSession.canEscape()) return;
+        this.gameSession.escapeRoom();
+        this.selectedMonster = null;
+        this.render();
+    }
+
+
 }
