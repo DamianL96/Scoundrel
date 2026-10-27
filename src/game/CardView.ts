@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import { Card } from "../domain/Card";
 import { CardButton } from './CardButton';
+import { cardTextureKey } from './cardTextures';
 
 export class CardView extends CardButton{
 
@@ -8,7 +9,7 @@ export class CardView extends CardButton{
 
     constructor(scene: Phaser.Scene, x: number, y: number, private card: Card, interactive:boolean=true){
 
-        super(scene, x, y, `${card.suit}\n${card.value}`, interactive);
+        super(scene, x, y, `${card.suit}\n${card.value}`, interactive, cardTextureKey(card));
 
         
         this.on('clicked',() => this.emit('card-clicked', this.card)); //emite la carta cuando es clickada

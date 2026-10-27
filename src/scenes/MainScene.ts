@@ -5,6 +5,8 @@ import { RoomView } from '../game/RoomView';
 import { CardButton } from '../game/CardButton';
 import { DeckView } from '../game/DeckView';
 import { WeaponView } from '../game/WeaponView';
+import { cardTextureKey } from '../game/cardTextures';
+import { Suit } from '../domain/enums/Suit';
 
 export class MainScene extends Phaser.Scene{
 
@@ -22,6 +24,24 @@ export class MainScene extends Phaser.Scene{
 
     constructor(){
         super({key:'MainScene'});
+    }
+
+    preload():void{
+        const available: Card[]=[
+            new Card(Suit.HEART, 3),
+            new Card(Suit.HEART, 4),
+            new Card(Suit.HEART, 5),
+            new Card(Suit.HEART, 6),
+            new Card(Suit.HEART, 7),
+            new Card(Suit.HEART, 8),
+            new Card(Suit.HEART, 9),
+            new Card(Suit.HEART, 10),
+        ];
+        available.forEach(card=>{
+            const key = cardTextureKey(card);
+            this.load.image(key, `assets/cards/${key}.jpeg`);
+        })
+        
     }
 
     create():void{
