@@ -14,11 +14,11 @@ export class MainScene extends Phaser.Scene{
     private selectedMonster: Card | null = null;
     
     private bareHandedButton: CardButton;
-    private weaponSlotButton: CardButton;
     private escapeButton: CardButton;
 
     private deckView: DeckView;
     private weaponView: WeaponView;
+    private isGameOver: boolean = false;
 
     constructor(){
         super({key:'MainScene'});
@@ -26,31 +26,29 @@ export class MainScene extends Phaser.Scene{
 
     create():void{
 
+        this.isGameOver = false;
+        this.selectedMonster = null;
+
         this.gameSession = new GameSession();
         this.gameSession.start();
 
         this.healthText = this.add.text(20, 20, '', { fontSize:'24px', color: '#ffffff'});
 
         this.roomView = new RoomView( this, 300);
-
-        this.events.on('card-clicked', (card: Card)=> this.onCardClicked(card));
+        this.roomView.onCardClicked(card => this.handle(() => this.onCardClicked(card)));
 
         this.bareHandedButton = new CardButton( this, 690, 500, 'A puño \nlimpio');
-        this.bareHandedButton.on('clicked', ()=> this.onBareHandClicked());
+        this.bareHandedButton.on('clicked', () => this.handle(() => this.onBareHandClicked()));
 
-        this.weaponSlotButton = new CardButton( this, 800, 500, 'Arma');
-        this.weaponSlotButton.on('clicked', ()=>this.onWeaponSlotClicked());
+        this.weaponView= new WeaponView(this, 800, 500);
+        this.weaponView.onWeaponClicked(() => this.handle(() => this.onWeaponSlotClicked()));
 
         this.escapeButton = new CardButton( this, 1180, 300, 'Huir');
-        this.escapeButton.on('clicked', ()=> this.onEscapeClicked());
+        this.escapeButton.on('clicked', ()=> this.handle ( () => this.onEscapeClicked()));
 
         this.deckView = new DeckView(this, 80, 150);
 
-        this.deckView.onDeckClicked(()=>this.onDeckClicked());
-
-        this.weaponView= new WeaponView(this, 540, 500);
-
-
+        this.deckView.onDeckClicked(()=> this.handle ( () => this.onDeckClicked()));
 
         this.render();
     }
@@ -58,18 +56,12 @@ export class MainScene extends Phaser.Scene{
     private render(): void{
         this.roomView.render(this.gameSession.room.getCards(), this.selectedMonster);
         this.updateHealthText();
-        this.weaponSlotButton.setEnabled(this.gameSession.player.hasWeapon());
 
         this.deckView.render(this.gameSession.deck.getRemainingCards().length, this.gameSession.room.canReload());
         this.weaponView.render(this.gameSession.player.getWeapon());
         this.escapeButton.setEnabled(this.gameSession.canEscape());
+        this.checkGameOver();
     }
-
-    /*private onCardClicked(card: Card): void{ //si la carta es un mosntruo y tiene arma, juega la carta y redibuja la pantalla
-        const useWeapon = card.isMonster() && this.gameSession.player.hasWeapon();
-        this.gameSession.playCard(card, useWeapon);
-        this.render();
-    }*/
 
     private updateHealthText():void{ //toma la vida del jugador y la dibuja
         this.healthText.setText(`Vida: ${this.gameSession.player.getHealth()}`);
@@ -80,41 +72,52 @@ export class MainScene extends Phaser.Scene{
         if(card.isMonster()){
             this.selectedMonster = card;
             //dar feedback visual, resaltar la carta seleccionada
-            this.render();
             return;
         }
         //pociones y armas se consumen o equipan automaticamente
         this.gameSession.playCard(card);
-        this.render();
     }
 
     private onBareHandClicked(): void{
         if(!this.selectedMonster) return;
-
         this.gameSession.playCard(this.selectedMonster, false);
         this.selectedMonster = null;
-        this.render();
     }
 
     private onWeaponSlotClicked():void{
-        if(!this.selectedMonster) return;
+        if(!this.selectedMonster || !this.gameSession.player.hasWeapon()) return;
         this.gameSession.playCard(this.selectedMonster, true);
         this.selectedMonster = null;
-        this.render();
     }
 
     private onDeckClicked():void{
         if(!this.gameSession.room.canReload()) return;
         this.gameSession.loadRoom();
-        this.render();
     }
 
     private onEscapeClicked():void{
         if(!this.gameSession.canEscape()) return;
         this.gameSession.escapeRoom();
         this.selectedMonster = null;
-        this.render();
     }
 
+    private checkGameOver():void{
+        if(this.isGameOver)return;
+        if(!this.gameSession.hasWon() && !this.gameSession.hasLost()) return;
 
+        this.isGameOver = true;
+
+        this.time.delayedCall(1000, ()=>{
+            this.scene.start('GameOverScene',{
+                won: this.gameSession.hasWon(),
+                points: this.gameSession.points()
+            })
+        })
+    }
+
+    private handle(action:()=>void):void{
+        if(this.isGameOver)return;
+        action();
+        this.render();
+    }
 }

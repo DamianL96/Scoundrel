@@ -71,7 +71,7 @@ export class GameSession{
     }
 
     private onCardRemovedFromRoom():void{ //cada vez que se saca una carta de Room
-        if(this.room.getCards().length === 0){
+        if(this.room.getCards().length === 1){// si es igual a 1 solo se resuelven 3 cartas y se rellenan automaticamente las otras
             this.canEscapeFlag = true;
             this.loadRoom();
         }
@@ -112,6 +112,9 @@ export class GameSession{
 
 
     canEscape():boolean{
+        if(!this.room.isFull()){ //solo se puede huir si no se resolvio ninguna carta de la habitacion
+            this.canEscapeFlag = false;
+        }
         return this.canEscapeFlag;
     }
 

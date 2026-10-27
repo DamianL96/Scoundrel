@@ -319,5 +319,20 @@ describe('Game', ()=>{
         });
     });
 
+    describe('hasLost', ()=>{
+        it('Pierde cuando el jugador muere',()=>{
+            const player = new Player();
+            player.fightBareHanded(new Card(Suit.CLUBS, 25));
+
+            const game = new GameSession(player, new Deck(), new Room());
+            expect(game.hasLost()).toBe(true);
+        });
+
+        it('No pierde mientras el jugador siga con vida', ()=>{
+            const game = new GameSession(new Player(), new Deck(), new Room());
+            expect(game.hasLost()).toBe(false);
+        });
+    });
+
     });
 });
