@@ -137,7 +137,58 @@ export class MainScene extends Phaser.Scene{
 
     private handle(action:()=>void):void{
         if(this.isGameOver)return;
+
+        const previousHealth= this.gameSession.player.getHealth();
         action();
+
+        const currentHealth= this.gameSession.player.getHealth(); 
         this.render();
+
+        if(previousHealth !== currentHealth){
+            this.animateHealtChange(previousHealth, currentHealth);
+        }
+    }
+
+    private playDamageEffect(): void{
+        const camera = this.cameras.main;
+
+        camera.shake(180, 0.008);
+
+        camera.flash(100, 255, 40, 40);
+    }
+
+    private animateHealtChange(previousHealt: number, currentHealth: number):void{
+        const counter = { value:previousHealt };
+
+        this.healthText.setText(`Vida: ${previousHealt}`);
+
+        this.tweens.add({
+            targets:counter,
+            value:currentHealth,
+            duration:450,
+            ease:'Cubic.easeOut',
+            onUpdate:()=>{
+                this.healthText.setText(
+                    `Vida: ${Math.round(counter.value)}`
+                );
+            },
+            onComplete:()=>{
+                this.healthText.setText(`Vida: ${currentHealth}`);
+            }
+        });
+
+        if(currentHealth < previousHealt){
+            this.playDamageEffect();
+            this.healthText.setTint(0xff5555); //se pone rojo
+        
+        }else if(currentHealth > previousHealt){ //se pone verde
+            this.healthText.setTint(0x66ff88);
+        }
+
+        if(currentHealth !== previousHealt){
+            this.time.delayedCall(500, ()=>{
+                this.healthText.clearTint();
+            })
+        }
     }
 }

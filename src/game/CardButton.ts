@@ -4,7 +4,7 @@ import * as Phaser from 'phaser';
 export class CardButton extends Phaser.GameObjects.Container{
     protected rectangulo: Phaser.GameObjects.Rectangle;
 
-    private readonly baseY:number;
+    private baseY:number;
     private hovered: boolean = false;
 
     constructor(scene: Phaser.Scene, x: number, y: number, label: string, interactive: boolean = true, textureKey?: string) {
@@ -84,5 +84,9 @@ export class CardButton extends Phaser.GameObjects.Container{
         }else{
             this.rectangulo.disableInteractive();
         }
+    }
+
+    setBasePosition(x: number, y:number):void{
+        this.baseY = y;
     }
 }
