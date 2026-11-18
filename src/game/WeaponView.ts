@@ -50,4 +50,18 @@ export class WeaponView{
     getWeaponCardView(): CardView | null{
         return this.weaponCardView;
     }
+
+    showInvalidAttack():void{
+        if(!this.lastDefeatedView) return;
+
+        const card = this.lastDefeatedView;
+
+        this.scene.tweens.add({
+            targets:card,
+            x: card.x + 8,
+            duration:60,
+            yoyo: true, repeat: 2,
+            ease: 'Sine.easeInOut'
+        });
+    }
 }

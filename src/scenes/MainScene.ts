@@ -8,6 +8,7 @@ import { WeaponView } from '../game/WeaponView';
 import { cardTextureKey } from '../game/cardTextures';
 import { Suit } from '../domain/enums/Suit';
 import StartGame from '../game/main';
+import { use } from 'matter';
 
 export class MainScene extends Phaser.Scene{
 
@@ -203,6 +204,12 @@ export class MainScene extends Phaser.Scene{
         if(!this.selectedMonster || this.isAnimating) return;
 
         const monster= this.selectedMonster;
+
+        if(useWeapon && !this.gameSession.canFightWithWeapon(monster)){
+            this.weaponView.showInvalidAttack();
+            return;
+        }//si el arma no puede derrotar al monstruo
+
         const target= this.roomView.getCardPosition(monster); 
 
         if(!target) return;
