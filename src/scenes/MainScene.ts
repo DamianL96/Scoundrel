@@ -152,9 +152,9 @@ export class MainScene extends Phaser.Scene{
     private playDamageEffect(): void{
         const camera = this.cameras.main;
 
-        camera.shake(180, 0.008);
-
-        camera.flash(100, 255, 40, 40);
+        camera.shake(280, 0.002); //verificar la cantidad de daño y cambiar efecto por la cantidad de daño
+        //100 duracion en milisegundos, 0.002 intensidad de sacudida
+        camera.flash(200, 255, 40, 40);
     }
 
     private animateHealtChange(previousHealt: number, currentHealth: number):void{

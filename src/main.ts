@@ -7,7 +7,7 @@ const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: 1440,
     height: 800,
-    backgroundColor: '#e43333',
+    backgroundColor: '#8f7a41',
     parent: 'app', //id del div en index.html donde aparece el canvas
     scene: [MainScene, GameOverScene]
 };

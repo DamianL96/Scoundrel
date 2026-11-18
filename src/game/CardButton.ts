@@ -89,4 +89,6 @@ export class CardButton extends Phaser.GameObjects.Container{
     setBasePosition(x: number, y:number):void{
         this.baseY = y;
     }
+
+
 }
