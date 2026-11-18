@@ -95,18 +95,22 @@ export class CardButton extends Phaser.GameObjects.Container{
         const originX = this.x;
         const originY = this.y;
         const originalRotation= this.rotation;
+        const originalDepth = this.depth;
 
         this.setInputEnabled(false);
+        this.setDepth(1000); //ponemos la carta encima de las demas
 
         this.scene.tweens.killTweensOf(this);
 
         // Configuración de la inclinación durante el golpe
-        const attackRotation = -0.45;
+        const direction = targetX >= originX ? 1 : -1;
+
+        const attackRotation = direction * 0.45; //calcula la esquina con la que ataca
         const attackScaleX = 0.92;
         const attackScaleY = 1.12;
 
         // Coordenadas de la esquina superior izquierda
-        const localX = -45 * attackScaleX;
+        const localX = direction * 45 * attackScaleX;
         const localY = -65 * attackScaleY;
 
         // Rotamos ese punto alrededor del centro de la carta
@@ -123,11 +127,12 @@ export class CardButton extends Phaser.GameObjects.Container{
         const impactX = targetX - offsetX;
         const impactY = targetY - offsetY;
 
+        const tweenRotation = direction * 0.12;
         //preparacion
         this.scene.tweens.add({
             targets:this, y:originY -35,
             scaleX:1.12, scaleY: 1.12,
-            rotation: -0.12, duration:150,
+            rotation: tweenRotation, duration:150,
             ease:'Sine.Out',
             
             
@@ -151,6 +156,8 @@ export class CardButton extends Phaser.GameObjects.Container{
                             ease:'Back.Out',
 
                             onComplete: ()=>{
+                                this.setDepth(originalDepth);
+                                this.resetHover();
                                 this.setInputEnabled(true);
                                 onComplete();
                             }
@@ -162,5 +169,17 @@ export class CardButton extends Phaser.GameObjects.Container{
         });
     }
 
-    
+    resetHover():void{
+        this.hovered = false;
+        this.scene.tweens.killTweensOf(this);
+
+        this.scene.tweens.add({
+            targets: this,
+            y: this.baseY,
+            scaleX: 1, scaleY: 1,
+            duration: 120,
+            ease: 'Sine.Out'
+        });
+    }
+
 }

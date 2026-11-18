@@ -208,7 +208,7 @@ export class MainScene extends Phaser.Scene{
         if(!target) return;
 
         this.isAnimating = true;
-
+        
         attacker.animateAttack(
             
             target.x, target.y,

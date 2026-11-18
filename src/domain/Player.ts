@@ -31,6 +31,7 @@ export class Player{
     getWeapon(): Weapon | null{ return this.weapon; }
     hasWeapon():boolean{ return this.weapon !== null; }
     equipWeapon(weapon: Card):void{ this.weapon= new Weapon(weapon); }
+    canFightWithWeapon(monster: Card):boolean{return this.weapon !== null && this.weapon.canDefeat(monster);}
 
     fightBareHanded(monster: Card):FightResult{
         this.applyDamage(monster.value);
