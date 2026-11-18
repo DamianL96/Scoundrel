@@ -77,4 +77,12 @@ export class CardButton extends Phaser.GameObjects.Container{
             ease: active ? 'Back.Out' : 'Sine.Out'
         });
     }
+
+    setInputEnabled(enabled: boolean):void{
+        if(enabled){
+            this.rectangulo.setInteractive({useHandCursor: true});
+        }else{
+            this.rectangulo.disableInteractive();
+        }
+    }
 }
