@@ -4,8 +4,13 @@ import * as Phaser from 'phaser';
 export class CardButton extends Phaser.GameObjects.Container{
     protected rectangulo: Phaser.GameObjects.Rectangle;
 
+    private readonly baseY:number;
+    private hovered: boolean = false;
+
     constructor(scene: Phaser.Scene, x: number, y: number, label: string, interactive: boolean = true, textureKey?: string) {
         super(scene, x, y);
+
+        this.baseY = y; //guarda la posicion original de la carta (para la animacion del hover)
 
         const hasImage = textureKey !== undefined && scene.textures.exists(textureKey);
         
@@ -14,6 +19,8 @@ export class CardButton extends Phaser.GameObjects.Container{
         if (interactive) {
             this.rectangulo.setInteractive({ useHandCursor: true });
             this.rectangulo.on('pointerdown', () => this.emit('clicked'));
+            this.rectangulo.on('pointerover',()=>this.animateHover(true));
+            this.rectangulo.on('pointerout',()=>this.animateHover(false));
         }
 
         if (hasImage) {
@@ -28,10 +35,7 @@ export class CardButton extends Phaser.GameObjects.Container{
             }).setOrigin(0.5);
             this.add([this.rectangulo, text]);
         }
-        
 
-
-       
         scene.add.existing(this);
     }
 
@@ -53,5 +57,24 @@ export class CardButton extends Phaser.GameObjects.Container{
         if(suit=== Suit.DIAMOND)return '♦';
         if(suit=== Suit.CLUBS)return '♣';
         return '♠';
+    }
+
+    private animateHover(active:boolean):void{
+        if(this.hovered === active) return;
+
+        this.hovered = active;
+
+        this.scene.tweens.killTweensOf(this);
+
+        this.scene.tweens.add({
+            targets:this,
+            y:active ? this.baseY -8 : this.baseY,
+
+            scaleX: active ? 1.02 : 1,
+            scaleY: active ? 1.02 : 1,
+
+            duration: active ? 130: 110,
+            ease: active ? 'Back.Out' : 'Sine.Out'
+        });
     }
 }

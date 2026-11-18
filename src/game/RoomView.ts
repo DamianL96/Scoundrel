@@ -17,7 +17,7 @@ export class RoomView{
 
         const cardWidth = 90;
         const spacing = 20;
-        const totalWidth= RoomView.SLOTS + cardWidth + (RoomView.SLOTS - 1) * spacing;
+        const totalWidth= RoomView.SLOTS * cardWidth + (RoomView.SLOTS - 1) * spacing;
         const startX = (this.scene.scale.width - totalWidth) / 2 + cardWidth / 2; 
         
 

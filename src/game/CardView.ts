@@ -9,7 +9,7 @@ export class CardView extends CardButton{
 
     constructor(scene: Phaser.Scene, x: number, y: number, private card: Card, interactive:boolean=true){
 
-        super(scene, x, y, `${card.suit}\n${card.value}`, interactive, cardTextureKey(card));
+        super(scene, x, y, `${cardTextureKey(card)}\n${card.value}`, interactive, cardTextureKey(card));
 
         
         this.on('clicked',() => this.emit('card-clicked', this.card)); //emite la carta cuando es clickada
@@ -20,5 +20,10 @@ export class CardView extends CardButton{
         /*cuando extendes una clase de game object se tiene que registrar manualmente
         la instancia en la escena a diferencia de this.add.container() que se registra automaticamente en la escena
         sinó el objeto existe en memoria pero no se dibuja en pantalla*/
+
+        
+    }
+    getCard(): Card {
+        return this.card;
     }
 }

@@ -39,7 +39,7 @@ export class MainScene extends Phaser.Scene{
         ];
         available.forEach(card=>{
             const key = cardTextureKey(card);
-            this.load.image(key, `assets/cards/${key}.jpeg`);
+            this.load.image(key, `assets/cards/${key}.png`);
         })
         
     }
