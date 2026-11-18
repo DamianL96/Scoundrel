@@ -122,4 +122,26 @@ export class RoomView{
         this.cardClickedCallback = callback;
     }
 
+    //obtiene la posicion del monstruo/carta
+    getCardPosition(card: Card): Phaser.Math.Vector2 | null{
+        const view = this.cardViews.find( view => view.getCard().equals(card));
+
+        if(!view) return null;
+
+        return new Phaser.Math.Vector2(view.x, view.y);
+    }
+
+    //hace retroceder al monstruo cuando es golpeado
+    playHittEffect(card: Card):void{
+
+        const view= this.cardViews.find(v=>v.getCard().equals(card));
+
+        if(!view) return;
+
+        this.scene.tweens.add({
+            targets:view, x:view.x + 7,
+            duration:35, yoyo:true, repeat:2,
+            ease:'Sine.InOut'
+        });
+    }
 }

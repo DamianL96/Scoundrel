@@ -38,8 +38,6 @@ export class WeaponView{
         }
     }
 
-
-
     private clear(){
         this.weaponCardView?.destroy();
         this.emptySlot?.destroy();
@@ -47,5 +45,9 @@ export class WeaponView{
         this.weaponCardView = null;
         this.emptySlot = null;
         this.lastDefeatedView = null;
+    }
+
+    getWeaponCardView(): CardView | null{
+        return this.weaponCardView;
     }
 }

@@ -7,6 +7,7 @@ import { DeckView } from '../game/DeckView';
 import { WeaponView } from '../game/WeaponView';
 import { cardTextureKey } from '../game/cardTextures';
 import { Suit } from '../domain/enums/Suit';
+import StartGame from '../game/main';
 
 export class MainScene extends Phaser.Scene{
 
@@ -21,6 +22,8 @@ export class MainScene extends Phaser.Scene{
     private deckView: DeckView;
     private weaponView: WeaponView;
     private isGameOver: boolean = false;
+
+    private isAnimating: boolean = false;
 
     constructor(){
         super({key:'MainScene'});
@@ -58,10 +61,10 @@ export class MainScene extends Phaser.Scene{
         this.roomView.onCardClicked(card => this.handle(() => this.onCardClicked(card)));
 
         this.bareHandedButton = new CardButton( this, 690, 500, 'A puño \nlimpio');
-        this.bareHandedButton.on('clicked', () => this.handle(() => this.onBareHandClicked()));
+        this.bareHandedButton.on('clicked', () => this.onBareHandClicked());
 
         this.weaponView= new WeaponView(this, 800, 500);
-        this.weaponView.onWeaponClicked(() => this.handle(() => this.onWeaponSlotClicked()));
+        this.weaponView.onWeaponClicked(() => this.onWeaponSlotClicked());
 
         this.escapeButton = new CardButton( this, 1180, 300, 'Huir');
         this.escapeButton.on('clicked', ()=> this.handle ( () => this.onEscapeClicked()));
@@ -100,14 +103,16 @@ export class MainScene extends Phaser.Scene{
 
     private onBareHandClicked(): void{
         if(!this.selectedMonster) return;
-        this.gameSession.playCard(this.selectedMonster, false);
-        this.selectedMonster = null;
+        this.startAttack(this.bareHandedButton, false);
     }
 
     private onWeaponSlotClicked():void{
         if(!this.selectedMonster || !this.gameSession.player.hasWeapon()) return;
-        this.gameSession.playCard(this.selectedMonster, true);
-        this.selectedMonster = null;
+
+        const weaponCard = this.weaponView.getWeaponCardView();
+        if(!weaponCard) return;
+        
+        this.startAttack(weaponCard, true);
     }
 
     private onDeckClicked():void{
@@ -136,7 +141,7 @@ export class MainScene extends Phaser.Scene{
     }
 
     private handle(action:()=>void):void{
-        if(this.isGameOver)return;
+        if(this.isGameOver || this.isAnimating)return;
 
         const previousHealth= this.gameSession.player.getHealth();
         action();
@@ -191,4 +196,39 @@ export class MainScene extends Phaser.Scene{
             })
         }
     }
+
+    //realiza las animaciones del ataque
+    private startAttack( attacker: CardButton, useWeapon:boolean): void{
+        
+        if(!this.selectedMonster || this.isAnimating) return;
+
+        const monster= this.selectedMonster;
+        const target= this.roomView.getCardPosition(monster); 
+
+        if(!target) return;
+
+        this.isAnimating = true;
+
+        attacker.animateAttack(
+            
+            target.x, target.y,
+            
+            //al impactar
+            ()=>{
+                this.roomView.playHittEffect(monster);
+            },
+
+            //cuando termina la animacion
+            ()=>{
+                this.isAnimating = false;
+
+                this.handle(()=>{
+                    this.gameSession.playCard(monster, useWeapon);
+                    this.selectedMonster = null;
+                });
+            }
+        );
+    }
+
+
 }

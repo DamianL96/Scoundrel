@@ -90,5 +90,77 @@ export class CardButton extends Phaser.GameObjects.Container{
         this.baseY = y;
     }
 
+    animateAttack(targetX:number, targetY:number, onImpact:()=>void, onComplete:()=>void):void{
 
+        const originX = this.x;
+        const originY = this.y;
+        const originalRotation= this.rotation;
+
+        this.setInputEnabled(false);
+
+        this.scene.tweens.killTweensOf(this);
+
+        // Configuración de la inclinación durante el golpe
+        const attackRotation = -0.45;
+        const attackScaleX = 0.92;
+        const attackScaleY = 1.12;
+
+        // Coordenadas de la esquina superior izquierda
+        const localX = -45 * attackScaleX;
+        const localY = -65 * attackScaleY;
+
+        // Rotamos ese punto alrededor del centro de la carta
+        const offsetX =
+            localX * Math.cos(attackRotation) -
+            localY * Math.sin(attackRotation);
+
+        const offsetY =
+            localX * Math.sin(attackRotation) +
+            localY * Math.cos(attackRotation);
+
+        // Posición del centro de la carta para que
+        // su esquina superior izquierda alcance el objetivo
+        const impactX = targetX - offsetX;
+        const impactY = targetY - offsetY;
+
+        //preparacion
+        this.scene.tweens.add({
+            targets:this, y:originY -35,
+            scaleX:1.12, scaleY: 1.12,
+            rotation: -0.12, duration:150,
+            ease:'Sine.Out',
+            
+            
+            onComplete: ()=>{
+                //golpe
+                this.scene.tweens.add({
+                    targets:this, x:impactX, y:impactY,
+                    rotation: attackRotation,
+                    scaleX:attackScaleX, scaleY:attackScaleY,
+                    duration:110,
+                    ease:'Expo.In',
+
+                    onComplete: ()=>{
+                    //recuperacion
+                        onImpact();
+                        this.scene.tweens.add({
+                            targets:this, x:originX, y:originY,
+                            rotation:originalRotation,
+                            scaleX:1, scaleY:1,
+                            duration:280,
+                            ease:'Back.Out',
+
+                            onComplete: ()=>{
+                                this.setInputEnabled(true);
+                                onComplete();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+    }
+
+    
 }
