@@ -173,4 +173,7 @@ export class GameSession{
         return this.player.isDead();
     }
 
+    canFightWithWeapon(monster:Card):boolean{
+        return this.player.canFightWithWeapon(monster);
+    }
 }
