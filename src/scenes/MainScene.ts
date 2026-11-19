@@ -100,9 +100,11 @@ export class MainScene extends Phaser.Scene{
             this.startHeal(card);
             return;
         }
-        //pociones y armas se consumen o equipan automaticamente
-        this.gameSession.playCard(card);
+        //si no es pocion ni monstruo es un arma que se equipa
+        this.startEquip(card);
     }
+
+
 
     private onBareHandClicked(): void{
         if(!this.selectedMonster) return;
@@ -190,11 +192,7 @@ export class MainScene extends Phaser.Scene{
         if(currentHealth < previousHealt){
             this.playDamageEffect();
             this.healthText.setTint(0xff5555); //se pone rojo
-        
-        }else if(currentHealth > previousHealt){ //se pone verde
-            this.healthText.setTint(0x66ff88);
         }
-
         if(currentHealth !== previousHealt){
             this.time.delayedCall(500, ()=>{
                 this.healthText.clearTint();
@@ -254,13 +252,58 @@ export class MainScene extends Phaser.Scene{
         const targetY = 30;
 
         cardView.animateHeal(targetX,targetY, ()=>{
-          
+            
+            const previousHealt= this.gameSession.player.getHealth();
+
             this.isAnimating= false;
         
             this.handle(()=>{
                 this.gameSession.playCard(card);
             });
+
+            const currentHealth = this.gameSession.player.getHealth();
+            if(currentHealth > previousHealt){
+                this.playHealEffect();
+            }
         });
     }
 
+    private playHealEffect():void{
+        
+        this.tweens.killTweensOf(this.healthText);
+
+        this.healthText.setTint(0x66ff88);
+
+        this.tweens.add({
+            targets:this.healthText,
+            scaleX: 1.25, scaleY: 1.25,
+            duration: 120,
+            yoyo: true,
+            ease: 'Back.Out',
+            onComplete: ()=>{ this.healthText.setScale(1)}
+        });
+    }
+
+    startEquip(card:Card):void{
+        if(this.isAnimating)return;
+
+        const cardView = this.roomView.getCardView(card);
+        if(!cardView)return;
+
+        const target = this.weaponView.getWeaponPosition();
+
+        this.isAnimating = true;
+        
+        cardView.animateEquip(target.x, target.y, () => {
+            
+            this.weaponView.animateLastDefeatedExit(() => {
+                
+                this.isAnimating = false;
+
+                this.handle(() => {
+                    this.gameSession.playCard(card);
+                });
+            });
+        });
+    }
 }

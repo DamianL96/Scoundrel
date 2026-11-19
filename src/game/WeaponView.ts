@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import { CardView } from './CardView';
 import { Weapon } from '../domain/Weapon';
 import { CardButton } from './CardButton';
+import { vi } from 'vitest';
 
 export class WeaponView{
     private weaponCardView: CardView | null = null;
@@ -50,6 +51,9 @@ export class WeaponView{
     getWeaponCardView(): CardView | null{
         return this.weaponCardView;
     }
+    getWeaponPosition():{x:number; y:number}{
+        return{ x: this.x, y:this.y }
+    }
 
     showInvalidAttack():void{
         if(!this.lastDefeatedView) return;
@@ -63,5 +67,32 @@ export class WeaponView{
             yoyo: true, repeat: 2,
             ease: 'Sine.easeInOut'
         });
+    }
+
+    animateLastDefeatedExit(onComplete: ()=> void): void{
+        
+        const targets= [
+            this.weaponCardView,
+            this.lastDefeatedView
+        ].filter((view): view is CardView => view !=null);
+        
+        if(targets.length === 0){
+            onComplete();
+            return;
+        }
+        targets.forEach(view=>{
+            view.setInputEnabled(false);
+            view.setAlpha(1);
+        })
+
+        this.scene.tweens.add({
+            targets,
+            alpha:0,
+            scaleX: 0.85, scaleY: 0.85,
+            duration: 300,
+            ease: 'Cubic.easeIn',
+            onComplete
+            
+        })
     }
 }

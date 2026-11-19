@@ -85,6 +85,10 @@ export class CardButton extends Phaser.GameObjects.Container{
             this.rectangulo.setInteractive({useHandCursor: true});
         }else{
             this.rectangulo.disableInteractive();
+            this.hovered = false;
+            this.scene.tweens.killTweensOf(this);
+            this.setPosition(this.x, this.baseY);
+            this.setScale(1);
         }
     }
 
@@ -225,6 +229,26 @@ export class CardButton extends Phaser.GameObjects.Container{
                 });
             }
         });
+    }
+
+    animateEquip(targetX:number, targetY:number, onComplete: ()=>void):void{
+        const originalDepth = this.depth;
+
+        this.setInputEnabled(false);
+        this.scene.tweens.killTweensOf(this);
+        this.setDepth(1000);
+
+        this.scene.tweens.add({
+            targets:this,
+            x:targetX, y:targetY,
+            duration: 400,
+            ease: 'Cubic.easeInOut',
+            onComplete:()=>{
+                this.setDepth(originalDepth);
+                onComplete();
+            }
+        })
+
     }
 
 }
