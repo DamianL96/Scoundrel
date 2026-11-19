@@ -6,6 +6,7 @@ export class CardButton extends Phaser.GameObjects.Container{
 
     private baseY:number;
     private hovered: boolean = false;
+    private hoverEnabled: boolean = true;
 
     constructor(scene: Phaser.Scene, x: number, y: number, label: string, interactive: boolean = true, textureKey?: string) {
         super(scene, x, y);
@@ -60,6 +61,7 @@ export class CardButton extends Phaser.GameObjects.Container{
     }
 
     private animateHover(active:boolean):void{
+        if(!this.hoverEnabled)return;
         if(this.hovered === active) return;
 
         this.hovered = active;
@@ -128,6 +130,10 @@ export class CardButton extends Phaser.GameObjects.Container{
         const impactY = targetY - offsetY;
 
         const tweenRotation = direction * 0.12;
+
+        this.hoverEnabled = false;
+        this.hovered= false;
+
         //preparacion
         this.scene.tweens.add({
             targets:this, y:originY -35,
@@ -157,9 +163,13 @@ export class CardButton extends Phaser.GameObjects.Container{
 
                             onComplete: ()=>{
                                 this.setDepth(originalDepth);
-                                this.resetHover();
-                                this.setInputEnabled(true);
-                                onComplete();
+
+                                this.resetHover(()=>{
+                                    this.hoverEnabled = true;
+                                    this.setInputEnabled(true);
+                                    onComplete();
+                                });
+                                
                             }
                         });
 
@@ -169,7 +179,7 @@ export class CardButton extends Phaser.GameObjects.Container{
         });
     }
 
-    resetHover():void{
+    resetHover(onComplete?: ()=>void ):void{
         this.hovered = false;
         this.scene.tweens.killTweensOf(this);
 
@@ -178,7 +188,8 @@ export class CardButton extends Phaser.GameObjects.Container{
             y: this.baseY,
             scaleX: 1, scaleY: 1,
             duration: 120,
-            ease: 'Sine.Out'
+            ease: 'Sine.Out',
+            onComplete: ()=> onComplete?.()
         });
     }
 
