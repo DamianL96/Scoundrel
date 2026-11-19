@@ -7,8 +7,6 @@ import { DeckView } from '../game/DeckView';
 import { WeaponView } from '../game/WeaponView';
 import { cardTextureKey } from '../game/cardTextures';
 import { Suit } from '../domain/enums/Suit';
-import StartGame from '../game/main';
-import { use } from 'matter';
 
 export class MainScene extends Phaser.Scene{
 
@@ -95,7 +93,11 @@ export class MainScene extends Phaser.Scene{
     private onCardClicked(card: Card): void{
         if(card.isMonster()){
             this.selectedMonster = card;
-            //dar feedback visual, resaltar la carta seleccionada
+            return;
+        }
+
+        if(card.isPotion()){
+            this.startHeal(card);
             return;
         }
         //pociones y armas se consumen o equipan automaticamente
@@ -146,6 +148,8 @@ export class MainScene extends Phaser.Scene{
 
         const previousHealth= this.gameSession.player.getHealth();
         action();
+
+        if(this.isAnimating)return;
 
         const currentHealth= this.gameSession.player.getHealth(); 
         this.render();
@@ -201,7 +205,7 @@ export class MainScene extends Phaser.Scene{
     //realiza las animaciones del ataque
     private startAttack( attacker: CardButton, useWeapon:boolean): void{
         
-        if(!this.selectedMonster || this.isAnimating) return;
+        if(!this.selectedMonster || this.isAnimating || this.isAnimating) return;
 
         const monster= this.selectedMonster;
 
@@ -237,5 +241,26 @@ export class MainScene extends Phaser.Scene{
         );
     }
 
+    private startHeal(card: Card):void{
+        if(this.isAnimating)return;
+
+        const cardView= this.roomView.getCardView(card);
+
+        if(!cardView)return;
+
+        this.isAnimating= true;
+
+        const targetX = 80;
+        const targetY = 30;
+
+        cardView.animateHeal(targetX,targetY, ()=>{
+          
+            this.isAnimating= false;
+        
+            this.handle(()=>{
+                this.gameSession.playCard(card);
+            });
+        });
+    }
 
 }

@@ -124,11 +124,15 @@ export class RoomView{
 
     //obtiene la posicion del monstruo/carta
     getCardPosition(card: Card): Phaser.Math.Vector2 | null{
-        const view = this.cardViews.find( view => view.getCard().equals(card));
+        const view = this.getCardView(card);
 
         if(!view) return null;
 
         return new Phaser.Math.Vector2(view.x, view.y);
+    }
+
+    getCardView(card:Card): CardView | null{
+        return this.cardViews.find(  view => view.getCard().equals(card)  ) ?? null;
     }
 
     //hace retroceder al monstruo cuando es golpeado

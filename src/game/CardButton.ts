@@ -182,4 +182,38 @@ export class CardButton extends Phaser.GameObjects.Container{
         });
     }
 
+    animateHeal(targetX: number, targetY:number, onComplete:()=>void):void{
+        this.setInputEnabled(false);
+        this.scene.tweens.killTweensOf(this);
+
+        const originalDepth= this.depth;
+        this.setDepth(1000);
+    
+        //la carta se eleva
+        this.scene.tweens.add({
+            targets:this,
+            y: this.y -20,
+            scaleX: 1.08, scaleY: 1.08,
+            duration: 150,
+            ease: 'Sine.Out',
+
+            onComplete: ()=>{
+                //se desplaza hacia la vida
+                this.scene.tweens.add({
+                    targets:this,
+                    x: targetX, y: targetY,
+                    alpha: 0,
+                    scaleX: 0.5, scaleY: 0.5,
+                    duration: 350,
+                    ease: 'Cubic.In',
+
+                    onComplete: ()=>{
+                        this.setDepth(originalDepth);
+                        onComplete();
+                    }
+                });
+            }
+        });
+    }
+
 }
