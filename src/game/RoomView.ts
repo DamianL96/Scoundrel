@@ -83,7 +83,7 @@ export class RoomView{
                 delay:animationIndex*320, 
                 ease:'Cubic.easeOut', 
                 onComplete:()=>{
-                    cardView?.setBasePosition(x,y);
+                    cardView?.setBasePosition(y);
                     cardView?.setInputEnabled(true);
                 }
             });
