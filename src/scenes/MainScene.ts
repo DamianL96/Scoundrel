@@ -215,7 +215,7 @@ export class MainScene extends Phaser.Scene{
         const target= this.roomView.getCardPosition(monster); 
         const monsterView= this.roomView.getCardView(monster);
 
-        if(!target) return;
+        if(!target || !monsterView) return;
 
         this.isAnimating = true;
         
@@ -230,18 +230,30 @@ export class MainScene extends Phaser.Scene{
 
             //cuando termina la animacion
             ()=>{
-                const destination = useWeapon
-                    ? this.weaponView.getLastDefeatedPosition()
-                    : null;
+                const previousHealth = this.gameSession.player.getHealth();
+                this.gameSession.playCard(monster, useWeapon);
+                this.selectedMonster = null;
 
-                monsterView?.animateDefeat(destination, () => {
-                    this.isAnimating = false;
+                const currentHealth = this.gameSession.player.getHealth();
 
-                    this.handle(() => {
-                        this.gameSession.playCard(monster, useWeapon);
-                        this.selectedMonster = null;
+                if(currentHealth < previousHealth){
+                    this.animateHealtChange(previousHealth, currentHealth);
+                }
+
+                this.time.delayedCall(400, ()=>{
+                    const destination = useWeapon
+                        ? this.weaponView.getLastDefeatedPosition()
+                        : null;
+
+                    monsterView?.animateDefeat(destination, () => {
+                        this.isAnimating = false;
+                        this.render();
                     });
-                });    
+                });
+
+                
+
+                    
             }
         );
     }
