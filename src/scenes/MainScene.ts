@@ -213,6 +213,7 @@ export class MainScene extends Phaser.Scene{
         }//si el arma no puede derrotar al monstruo
 
         const target= this.roomView.getCardPosition(monster); 
+        const monsterView= this.roomView.getCardView(monster);
 
         if(!target) return;
 
@@ -229,12 +230,18 @@ export class MainScene extends Phaser.Scene{
 
             //cuando termina la animacion
             ()=>{
-                this.isAnimating = false;
+                const destination = useWeapon
+                    ? this.weaponView.getLastDefeatedPosition()
+                    : null;
 
-                this.handle(()=>{
-                    this.gameSession.playCard(monster, useWeapon);
-                    this.selectedMonster = null;
-                });
+                monsterView?.animateDefeat(destination, () => {
+                    this.isAnimating = false;
+
+                    this.handle(() => {
+                        this.gameSession.playCard(monster, useWeapon);
+                        this.selectedMonster = null;
+                    });
+                });    
             }
         );
     }

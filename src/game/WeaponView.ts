@@ -92,7 +92,10 @@ export class WeaponView{
             duration: 300,
             ease: 'Cubic.easeIn',
             onComplete
-            
-        })
+        });
+    }
+
+    getLastDefeatedPosition():{x:number; y:number}{
+        return { x:this.x +120, y:this.y}
     }
 }

@@ -251,4 +251,31 @@ export class CardButton extends Phaser.GameObjects.Container{
 
     }
 
+    animateDefeat( target:{x:number; y:number}|null, onComplete: ()=>void):void{
+        this.setInputEnabled(false);
+        this.scene.tweens.killTweensOf(this);
+
+        if(target){
+            //monstruo derrotado por arma
+            this.scene.tweens.add({
+                targets:this,
+                x:target.x, y:target.y,
+                duration: 350,
+                ease: 'Cubic.easeInOut',
+                onComplete
+            });
+
+        }else{
+            //monstruo derrotado a puño
+            this.scene.tweens.add({
+                targets:this,
+                alpha:0,
+                scaleX: 0.65, scaleY: 0.65,
+                duration: 300,
+                ease: 'Cubic.easeIn',
+                onComplete
+            });
+        }
+    }
+
 }
